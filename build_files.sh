@@ -1,11 +1,8 @@
 #!/bin/bash
 
-# Ativar o ambiente virtual
-source venv/bin/activate
-
 # Instalar dependências
-pip install -r requirements.txt
+pip install -r backend/requirements.txt
 
-# Rodar as migrações
-python manage.py migrate --noinput
-
+# Rodar migrações
+python backend/manage.py makemigrations
+python backend/manage.py migrate --noinput
