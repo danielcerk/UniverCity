@@ -6,10 +6,10 @@ const axiosInstance = axios.create({
     baseURL: process.env.NODE_ENV === 'production' 
       ? 'https://univercity-sd4i.onrender.com/'
       : 'http://127.0.0.1:8000',
-    timeout: 15000,
     headers: { 'Content-Type': 'application/json' },
     withCredentials: true
-  });
+});
+  
   
 
 axiosInstance.interceptors.response.use(
