@@ -1,6 +1,9 @@
 #!/bin/bash
 
 # Instalar dependências
+
+pip install gunicorn
+
 pip install -r backend/requirements.txt
 
 # Rodar migrações
