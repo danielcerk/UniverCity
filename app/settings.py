@@ -155,12 +155,21 @@ DATETIME_FORMAT = 'd/m/Y às H:i:s'
 
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'https://univercity-app-zeta.vercel.app',
 ]
+if DEBUG:
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = False
-CSRF_TRUSTED_ORIGINS = ['http://localhost:3000']
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+
+else:
+
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True    
+
+CSRF_TRUSTED_ORIGINS = ['http://localhost:3000',
+    'https://univercity-app-zeta.vercel.app',]
 
 PHONENUMBER_DEFAULT_REGION = 'BR'
 
