@@ -1,12 +1,10 @@
 # UniverCity
-## UniverCity: O ReclameAqui dos Estudantes
-
----
+#### UniverCity: O ReclameAqui dos Estudantes
 
 ## Sobre
 
-A **UniverCity** tem a intenção de ser o *"ReclameAqui"* dos alunos/estudantes e universidades, permitindo que usuários realizem perguntas, respostas, comentários, reclamações e obtenham informações sobre instituições de ensino.
-Além disso, cada universidade será uma comunidade, criada por um administrador ou moderador de conteúdo, caso haja necessidade, a fim de evitar possíveis erros.
+A UniverCity tem a intenção de ser o "ReclameAqui" dos alunos/estudantes e universidades, permitindo que usuários realizem perguntas, respostas, comentários, reclamações e obtenham informações sobre instituições de ensino. Além disso, cada universidade será uma comunidade, criada por um administrador ou moderador de conteúdo, caso haja necessidade, a fim de evitar possíveis erros
+
 ---
 
 ## Funcionalidades Principais
