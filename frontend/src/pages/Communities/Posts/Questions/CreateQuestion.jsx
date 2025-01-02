@@ -3,7 +3,7 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
-import axios from 'axios';
+import axiosInstance from '../../../../interceptors/axios'; // Importe a instância personalizada
 
 export default function CreateQuestion() {
   const [title, setTitle] = useState("");  // Estado para o título da pergunta
@@ -34,8 +34,8 @@ export default function CreateQuestion() {
       
       try {
         // Envia a requisição POST para criar a pergunta
-        const response = await axios.post(
-          `http://127.0.0.1:8000/api/v1/communities/${slug}/questions/`,
+        const response = await axiosInstance.post(
+          `/api/v1/communities/${slug}/questions/`,
           questionData,
           {
             headers: {
@@ -59,7 +59,7 @@ export default function CreateQuestion() {
   // Função para buscar os dados da universidade
   const getUniversityID = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}`);
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}`);
       setUniversity(response.data); // Atualiza o estado da universidade
       console.log(response.data); // Verifique se a universidade está sendo recuperada corretamente
     } catch (error) {
@@ -70,7 +70,7 @@ export default function CreateQuestion() {
   // Função para buscar os dados do usuário
   const getUserData = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
+      const response = await axiosInstance.get('/api/v1/account', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },

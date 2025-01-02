@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Container, Form, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import axiosInstance from '../../../interceptors/axios';
 import Sidebar from '../../../layout/Sidebar/Sidebar';
 
 export default function CreateCommunity() {
@@ -24,9 +25,10 @@ export default function CreateCommunity() {
 
   const getUser = async (token) => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
+      // Adiciona o token no cabeçalho da requisição
+      const response = await axiosInstance.get('/api/v1/account', {
         headers: {
-          Authorization: `Bearer ${token}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
       setUser(response.data);
@@ -36,6 +38,7 @@ export default function CreateCommunity() {
       return null;
     }
   };
+  
 
   const fetchEstados = async () => {
     try {
@@ -61,7 +64,6 @@ export default function CreateCommunity() {
       console.error('Erro ao buscar cidades:', error);
     }
   };
-  
 
   useEffect(() => {
     const initialize = async () => {
@@ -92,7 +94,6 @@ export default function CreateCommunity() {
       setCidades([]);
     }
   };
-  
 
   const handleInputChange = (e) => {
     const { id, value, type, checked } = e.target;
@@ -105,16 +106,7 @@ export default function CreateCommunity() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const token = localStorage.getItem('access_token');
-      await axios.post(
-        'http://127.0.0.1:8000/api/v1/communities/',
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axiosInstance.post('/api/v1/communities/', formData);
       navigate('/comunidades/'); // Redireciona após criar a comunidade.
     } catch (error) {
       console.error('Erro ao criar a comunidade:', error);

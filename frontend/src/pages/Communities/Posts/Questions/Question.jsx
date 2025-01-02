@@ -4,7 +4,7 @@ import Sidebar from '../../../../layout/Sidebar/Sidebar';
 import MDEditor from '@uiw/react-md-editor';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
-import axios from 'axios';
+import axiosInstance from '../../../../interceptors/axios'; // Importe a instância personalizada
 
 export default function Question() {
   const { slug, question_slug } = useParams();
@@ -23,13 +23,13 @@ export default function Question() {
   const [responses, setResponses] = useState([]);
   const navigate = useNavigate();
 
-  const getUserData = async () => {
+  const getUserData = async (token) => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
+      const response = await axiosInstance.get('/api/v1/account', {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          'Authorization': `Bearer ${token}`,
         },
-      });
+      }); // Usando axiosInstance
       setUser(response.data);
     } catch (error) {
       console.error('Erro ao conseguir os dados do usuário', error);
@@ -38,9 +38,8 @@ export default function Question() {
 
   const fetchQuestion = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}`);
-      const data = await response.json();
-      setQuestion(data);
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}/questions/${question_slug}`);
+      setQuestion(response.data);
     } catch (error) {
       console.error("Erro ao carregar pergunta:", error);
       navigate('/404');
@@ -49,16 +48,15 @@ export default function Question() {
 
   const fetchResponses = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/`);
-      const data = await response.json();
-      setResponses(data.results);
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}/questions/${question_slug}/responses/`);
+      setResponses(response.data.results);
     } catch (error) {
       console.error("Erro ao carregar respostas:", error);
     }
   };
 
   useEffect(() => {
-    getUserData();
+    getUserData(localStorage.getItem('access_token'));
     fetchQuestion();
     fetchResponses();
   }, [slug, question_slug]);
@@ -96,27 +94,15 @@ export default function Question() {
     e.preventDefault();
     if (newResponse.trim() !== "") {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`, // Se o token de autenticação for necessário
-          },
-          body: JSON.stringify({
-            user: user.id,
-            text: newResponse,
-            content_type: 17,
-            object_id: question.id,
-          }),
+        const response = await axiosInstance.post(`/api/v1/communities/${slug}/questions/${question_slug}/responses/`, {
+          user: user.id,
+          text: newResponse,
+          content_type: 17,
+          object_id: question.id,
         });
-        
-        if (response.ok) {
-          const data = await response.json();
-          setResponses([...responses, data]);
-          setNewResponse(""); // Limpa o campo após enviar a resposta
-        } else {
-          console.error("Erro ao enviar a resposta:", response.statusText);
-        }
+
+        setResponses([...responses, response.data]);
+        setNewResponse(""); // Limpa o campo após enviar a resposta
       } catch (error) {
         console.error("Erro ao enviar a resposta:", error);
       }
@@ -125,21 +111,14 @@ export default function Question() {
 
   const handleDeleteResponse = async (responseId) => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/${responseId}/`,
-        {
-          method: 'DELETE',
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
-          },
-        }
+      const response = await axiosInstance.delete(
+        `/api/v1/communities/${slug}/questions/${question_slug}/responses/${responseId}/`
       );
-  
-      if (response.ok) {
+
+      if (response.status === 204) {
         setResponses(responses.filter((res) => res.id !== responseId));
       } else {
-        const errorData = await response.json();
-        console.error('Erro ao deletar a resposta:', errorData);
+        console.error('Erro ao deletar a resposta:', response.data);
       }
     } catch (error) {
       console.error('Erro ao deletar a resposta:', error);
@@ -150,7 +129,6 @@ export default function Question() {
     <Container className="mt-5">
       <Row>
         <Sidebar />
-
         <Col xs={12} md={9} className="p-5">
           <Card className="mb-4">
             {question ? (

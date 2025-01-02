@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import axiosInstance from "../../../interceptors/axios"; // Importando a instância personalizada do Axios
 
 export default function Register() {
   const navigate = useNavigate();
@@ -9,11 +8,11 @@ export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // Estado para mensagens de erro
+  const [errorMessage, setErrorMessage] = useState("");
 
   const submit = async (e) => {
     e.preventDefault();
-    setErrorMessage(""); // Limpa a mensagem de erro ao tentar novamente
+    setErrorMessage("");
 
     const user = {
       name: name,
@@ -22,8 +21,8 @@ export default function Register() {
     };
 
     try {
-      const { data } = await axios.post(
-        "http://127.0.0.1:8000/api/v1/auth/register/",
+      const { data } = await axiosInstance.post(
+        "api/v1/auth/register/",  // Usando a instância personalizada do Axios
         user,
         {
           headers: {
@@ -33,15 +32,13 @@ export default function Register() {
         }
       );
 
-      // Salvar tokens no localStorage
       localStorage.clear();
       localStorage.setItem("access_token", data.access);
       localStorage.setItem("refresh_token", data.refresh);
-      axios.defaults.headers.common["Authorization"] = `Bearer ${data["access"]}`;
+      axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${data["access"]}`;
 
       navigate("/feed");
     } catch (error) {
-      // Tratamento de erros para dados inválidos
       if (error.response && error.response.status === 400) {
         const errorData = error.response.data;
         if (errorData.name) {
@@ -76,7 +73,6 @@ export default function Register() {
             <div className="card p-4">
               <h2 className="text-center mb-4">Cadastre-se na Univercity</h2>
 
-              {/* Exibir mensagem de erro */}
               {errorMessage && (
                 <div className="alert alert-danger" role="alert">
                   {errorMessage}
@@ -84,7 +80,6 @@ export default function Register() {
               )}
 
               <form onSubmit={submit}>
-                {/* Campo de Nome */}
                 <div className="mb-3">
                   <label htmlFor="name" className="form-label">
                     Nome
@@ -100,7 +95,6 @@ export default function Register() {
                   />
                 </div>
 
-                {/* Campo de E-mail */}
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     E-mail
@@ -116,7 +110,6 @@ export default function Register() {
                   />
                 </div>
 
-                {/* Campo de Senha */}
                 <div className="mb-3">
                   <label htmlFor="password" className="form-label">
                     Senha
@@ -132,7 +125,6 @@ export default function Register() {
                   />
                 </div>
 
-                {/* Botão de Registro */}
                 <div className="d-grid gap-2">
                   <button type="submit" className="btn btn-dark">
                     Registrar
@@ -140,7 +132,6 @@ export default function Register() {
                 </div>
               </form>
 
-              {/* Link para Login */}
               <div className="text-center mt-3">
                 <p>
                   Já tem uma conta?{" "}

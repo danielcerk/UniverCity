@@ -3,11 +3,11 @@ import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useParams, useNavigate } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
-import axios from 'axios';
+import axiosInstance from '../../../../interceptors/axios'; // Aqui você importa sua instância do Axios
 
 export default function CreateReclamation() {
   const [title, setTitle] = useState("");  // Estado para o título da reclamação
-  const [reclamation, setReclamation] = useState("");  // Estado para o conteúdo da reclamação (garantindo que seja uma string)
+  const [reclamation, setReclamation] = useState("");  // Estado para o conteúdo da reclamação
   const [university, setUniversity] = useState({ id: "" }); // Estado para a universidade
   const [isAuth, setIsAuth] = useState(false); // Verifica se o usuário está autenticado
   const { slug } = useParams(); // Obtém o slug da URL
@@ -39,14 +39,9 @@ export default function CreateReclamation() {
 
       try {
         // Envia a requisição POST para criar a reclamação
-        const response = await axios.post(
-          `http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations/`,
-          reclamationData,
-          {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('access_token')}`, // Cabeçalho de autorização
-            },
-          }
+        const response = await axiosInstance.post(
+          `/api/v1/communities/${slug}/reclamations/`,
+          reclamationData
         );
 
         console.log("Reclamação criada com sucesso:", response.data);
@@ -64,7 +59,7 @@ export default function CreateReclamation() {
   // Função para buscar os dados da universidade e o ID do usuário
   const getUniversityID = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}`);
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}`);
       setUniversity(response.data); // Atualiza o estado da universidade
       console.log(response.data); // Verifique se a universidade está sendo recuperada corretamente
     } catch (error) {
@@ -73,13 +68,13 @@ export default function CreateReclamation() {
   };
 
   // Função para buscar os dados do usuário
-  const getUserID = async () => {
+  const getUserID = async (token) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:8000/api/v1/account`, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem('access_token')}`, // Cabeçalho de autorização
-        }
-      });
+      const response = await axiosInstance.get('/api/v1/account',{
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
       setUser(response.data); // Atualiza o estado do usuário
     } catch (error) {
       console.error('Erro ao obter dados do usuário', error);
@@ -93,11 +88,11 @@ export default function CreateReclamation() {
     
     if (token) {
       setIsAuth(true);
-      getUniversityID(); // Busca os dados da universidade
-      getUserID(); // Busca os dados do usuário
+      getUniversityID();
+      getUserID();
     } else {
       setIsAuth(false);
-      navigate('/login'); // Redireciona para a página de login se não estiver autenticado
+      navigate('/login');
     }
   }, [slug, navigate]);
 
@@ -127,8 +122,8 @@ export default function CreateReclamation() {
               <Form.Label>Qual o seu problema?</Form.Label>
               <div className="container" data-color-mode="light">
                   <MDEditor
-                    value={reclamation} // Aqui passamos o valor do estado `reclamation`
-                    onChange={handleReclamationChange} // Aqui chamamos a função de atualização do estado
+                    value={reclamation}
+                    onChange={handleReclamationChange}
                   />
                   <MDEditor.Markdown source={reclamation} style={{ whiteSpace: 'pre-wrap' }} />
               </div>

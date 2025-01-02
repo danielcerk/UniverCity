@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
-import axios from "axios";
-
-import {Link} from 'react-router-dom'
+import axiosInstance from "../../../interceptors/axios";
+import { Link } from "react-router-dom";
 
 export default function Search() {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q");
-  const [results, setResults] = useState({ 
+  const [results, setResults] = useState({
     communities: [],
     profiles: [],
     reclamations: [],
@@ -19,8 +18,8 @@ export default function Search() {
     document.title = `UniverCity | Resultados para '${query}'`;
 
     if (query) {
-      axios
-        .get(`http://127.0.0.1:8000/api/v1/search/?q=${query}`)
+      axiosInstance
+        .get(`search/?q=${query}`)
         .then((response) => {
           setResults(response.data);
         })

@@ -1,15 +1,14 @@
 import styles from './Navbar.module.css';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
-
-import axios from 'axios'
+import axiosInstance from '../../interceptors/axios';  // Importando a instância do Axios
 
 export default function Navbar() {
   const [isAuth, setIsAuth] = useState(false);
   const [search, setSearch] = useState('');
-
   const navigate = useNavigate();
 
+  // Função para capturar o valor de busca
   function getSearch(e) {
     e.preventDefault();
     if (search.trim()) {
@@ -17,23 +16,18 @@ export default function Navbar() {
     }
   }
 
+  // Função de logout utilizando axiosInstance
   const doLogout = async (e) => {
     e.preventDefault();
-
     try {
-      const { data } = await axios.post(
-        'http://127.0.0.1:8000/api/v1/auth/logout/',
-        { refresh_token: localStorage.getItem('refresh_token') },
-        {
-          headers: { 'Content-Type': 'application/json' },
-          withCredentials: true,
-        }
+      const { data } = await axiosInstance.post(
+        'api/v1/auth/logout/',
+        { refresh_token: localStorage.getItem('refresh_token') }
       );
 
       console.log('Logout bem-sucedido:', data);
       localStorage.clear();
-      axios.defaults.headers.common['Authorization'] = null;
-
+      axiosInstance.defaults.headers.common['Authorization'] = null;
       navigate('/login/');
     } catch (error) {
       console.error('Erro no logout:', error);
@@ -43,13 +37,8 @@ export default function Navbar() {
   // Verificar se o usuário está autenticado
   useEffect(() => {
     const token = localStorage.getItem('access_token');
-    if (token) {
-      setIsAuth(true);
-    } else {
-      setIsAuth(false);
-    }
+    setIsAuth(!!token);
   }, []);
-
 
   return (
     <nav className="navbar navbar-expand-lg">
@@ -93,19 +82,27 @@ export default function Navbar() {
           {isAuth ? (
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <button className='nav-link' onClick={doLogout}>Sair</button>
+                <button className="nav-link" onClick={doLogout}>
+                  Sair
+                </button>
               </li>
               <li className="nav-item">
-                <Link to="/conta" className="nav-link">Olá, Estudante!</Link>
+                <Link to="/conta" className="nav-link">
+                  Olá, Estudante!
+                </Link>
               </li>
             </ul>
           ) : (
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
-                <Link to="/comunidades" className="nav-link">Universidades</Link>
+                <Link to="/comunidades" className="nav-link">
+                  Universidades
+                </Link>
               </li>
               <li className="nav-item">
-                <Link to="/login" className="nav-link">Login</Link>
+                <Link to="/login" className="nav-link">
+                  Login
+                </Link>
               </li>
               <li className="nav-item">
                 <Link to="/cadastro" className="btn btn-dark">
