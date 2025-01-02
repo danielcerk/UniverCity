@@ -4,8 +4,8 @@
 
 pip install gunicorn
 
-pip install -r backend/requirements.txt
+pip install -r requirements.txt
 
 # Rodar migrações
-python backend/manage.py makemigrations
-python backend/manage.py migrate --noinput
+python manage.py makemigrations
+python manage.py migrate --noinput
