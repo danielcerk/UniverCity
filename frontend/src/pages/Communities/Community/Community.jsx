@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Button } from 'react-bootstrap';
-import axios from 'axios';
 import { useParams, useNavigate, Link } from 'react-router-dom';
+import axiosInstance from "../../../interceptors/axios";
 
 import Sidebar from '../../../layout/Sidebar/Sidebar';
 import spinner from '../../../assets/loading.svg';
@@ -31,9 +31,9 @@ export default function Community() {
   const getUniversityData = async () => {
     try {
       const [universityRes, questionsRes, complaintsRes] = await Promise.all([
-        axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}`),
-        axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions`),
-        axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations`),
+        axiosInstance.get(`/api/v1/communities/${slug}`),
+        axiosInstance.get(`/api/v1/communities/${slug}/questions`),
+        axiosInstance.get(`/api/v1/communities/${slug}/reclamations`),
       ]);
 
       setUniversity(universityRes.data);
@@ -102,13 +102,15 @@ export default function Community() {
                     <Card.Body>
                       {questions.length > 0 ? (
                         questions.map((question, index) => (
-                          <Link to={`/comunidades/${university.slug}/pergunta/${question.slug}`}><div key={index} className="post">
-                            <div className="post-header">
-                              <h5 className="post-title">{question.title}</h5>
-                              <p className="post-meta">Postado por <strong>{question.author}</strong> - {question.created_at}</p>
+                          <Link to={`/comunidades/${university.slug}/pergunta/${question.slug}`} key={index}>
+                            <div className="post">
+                              <div className="post-header">
+                                <h5 className="post-title">{question.title}</h5>
+                                <p className="post-meta">Postado por <strong>{question.author}</strong> - {question.created_at}</p>
+                              </div>
+                              <p className="post-content">{question.content}</p>
                             </div>
-                            <p className="post-content">{question.content}</p>
-                          </div></Link>
+                          </Link>
                         ))
                       ) : (
                         <p className="text-center text-muted">Nenhuma pergunta encontrada.</p>
@@ -123,13 +125,15 @@ export default function Community() {
                     <Card.Body>
                       {complaints.length > 0 ? (
                         complaints.map((complaint, index) => (
-                          <Link to={`/comunidades/${university.slug}/reclamacao/${complaint.slug}`}><div key={index} className="post">
-                            <div className="post-header">
-                              <h5 className="post-title">{complaint.title}</h5>
-                              <p className="post-meta">Postado por <strong>{complaint.author}</strong> - {complaint.created_at}</p>
+                          <Link to={`/comunidades/${university.slug}/reclamacao/${complaint.slug}`} key={index}>
+                            <div className="post">
+                              <div className="post-header">
+                                <h5 className="post-title">{complaint.title}</h5>
+                                <p className="post-meta">Postado por <strong>{complaint.author}</strong> - {complaint.created_at}</p>
+                              </div>
+                              <p className="post-content">{complaint.content}</p>
                             </div>
-                            <p className="post-content">{complaint.content}</p>
-                          </div></Link>
+                          </Link>
                         ))
                       ) : (
                         <p className="text-center text-muted">Nenhuma reclamação encontrada.</p>

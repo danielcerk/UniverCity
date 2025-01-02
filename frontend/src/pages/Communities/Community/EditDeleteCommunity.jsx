@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Form, Button, Col, Row } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../../interceptors/axios'; // Importa a instância personalizada
 import Sidebar from '../../../layout/Sidebar/Sidebar';
 
 export default function EditDeleteCommunity() {
@@ -23,35 +23,34 @@ export default function EditDeleteCommunity() {
 
   // Busca informações do usuário autenticado
   const getUser = async () => {
-
     try {
 
       const token = localStorage.getItem('access_token')
 
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axiosInstance.get('/api/v1/account',{
+        headers: {
+          'Authorization': `Bearer ${token}`,  // Passando o token de autenticação
+        },
       });
       setUser(response.data);
-      console.log(response.data)
+      console.log(response.data);
       return response.data;
     } catch (error) {
       console.error('Erro ao buscar os dados do usuário:', error);
       return null;
     }
   };
-  
 
   // Busca dados da universidade
   const fetchUniversidade = async () => {
     try {
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/`
-      );
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}/`);
       setFormData(response.data);
       fetchCidades(response.data.state);
       document.title = `UniverCity | Editar '${response.data.name}'`;
     } catch (error) {
       console.error('Erro ao buscar universidade:', error);
+      navigate('/404')
     }
   };
 
@@ -93,42 +92,23 @@ export default function EditDeleteCommunity() {
   // Salva alterações feitas
   const handleSave = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem('access_token'); // ou o método que você usa para armazenar o token
     try {
-      await axios.put(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/`,
-        formData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axiosInstance.put(`api/v1/communities/${slug}/`, formData);
       navigate('/comunidades/');
     } catch (error) {
       console.error('Erro ao salvar alterações:', error);
     }
   };
-  
+
   // Exclui a universidade
   const handleDelete = async () => {
-    const token = localStorage.getItem('access_token'); // ou o método que você usa para armazenar o token
     try {
-      await axios.delete(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      await axiosInstance.delete(`api/v1/communities/${slug}/`);
       navigate('/comunidades/');
     } catch (error) {
       console.error('Erro ao excluir universidade:', error);
-
     }
   };
-  
 
   useEffect(() => {
     const initialize = async () => {

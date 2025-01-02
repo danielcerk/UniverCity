@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import axios from "axios";
+import axiosInstance from "../../../interceptors/axios";
 
 import Sidebar from "../../../layout/Sidebar/Sidebar";
 import spinner from "../../../assets/loading.svg";
 
-import styles from '../../../assets/loading.module.css'
+import styles from "../../../assets/loading.module.css";
 
 export default function Communities() {
   const [communities, setCommunities] = useState([]);
@@ -14,7 +14,7 @@ export default function Communities() {
 
   const getCommunities = async () => {
     try {
-      const res = await axios.get(`http://127.0.0.1:8000/api/v1/communities/`);
+      const res = await axiosInstance.get(`/api/v1/communities/`);
       setCommunities(res.data.results);
     } catch (error) {
       console.error("Erro ao buscar as Universidades:", error);
@@ -50,7 +50,13 @@ export default function Communities() {
             {loading ? (
               <div className={styles.loading_container}>
                 <div className="text-center">
-                    <img src={spinner} alt="Carregando..." height="35" width="35" className="loading-svg" />
+                  <img
+                    src={spinner}
+                    alt="Carregando..."
+                    height="35"
+                    width="35"
+                    className="loading-svg"
+                  />
                 </div>
               </div>
             ) : communities.length > 0 ? (

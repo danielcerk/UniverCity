@@ -3,7 +3,7 @@ import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
-import axios from 'axios';
+import axiosInstance from '../../../../interceptors/axios'; // Importe a instância personalizada
 
 export default function Reclamation() {
   const { slug, reclamation_slug } = useParams();
@@ -15,7 +15,6 @@ export default function Reclamation() {
     author_slug: "",
     created_at: "",
   });
-  const [reclamations, setReclamations] = useState([]);
   const [responses, setResponses] = useState([]); // Para armazenar as respostas
   const [newReclamation, setNewReclamation] = useState("");
   const [user, setUser] = useState(null);
@@ -24,7 +23,7 @@ export default function Reclamation() {
   // Função para buscar os dados do usuário
   const getUserData = async () => {
     try {
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
+      const response = await axiosInstance.get('/api/v1/account', {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('access_token')}`,
         },
@@ -38,10 +37,8 @@ export default function Reclamation() {
   // Função para buscar a reclamação da API
   const fetchReclamation = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations/${reclamation_slug}`);
-      const data = await response.json();
-      setReclamation(data);
-      console.log(data)
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}/reclamations/${reclamation_slug}`);
+      setReclamation(response.data);
     } catch (error) {
       console.error("Erro ao carregar reclamação:", error);
       navigate('/404');
@@ -51,9 +48,8 @@ export default function Reclamation() {
   // Função para buscar as respostas da reclamação
   const fetchResponses = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/`);
-      const data = await response.json();
-      setResponses(data.results); // Armazenar as respostas
+      const response = await axiosInstance.get(`/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/`);
+      setResponses(response.data.results); // Armazenar as respostas
     } catch (error) {
       console.error("Erro ao carregar respostas:", error);
     }
@@ -79,28 +75,19 @@ export default function Reclamation() {
     e.preventDefault();
     if (newReclamation.trim() !== "") {
       try {
-        const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('access_token')}`, // Token de autenticação
-          },
-          body: JSON.stringify({
-            user: user.id,
-            text: newReclamation,
-            content_type: 9,
-            object_id: reclamation.id,
-          }),
+        const response = await axiosInstance.post(`/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/`, {
+          user: user.id,
+          text: newReclamation,
+          content_type: 9,
+          object_id: reclamation.id,
         });
         
         // Verificar resposta da API
-        if (response.ok) {
-          const data = await response.json();
-          setResponses([...responses, data]);
+        if (response.status === 201) {
+          setResponses([...responses, response.data]);
           setNewReclamation(""); // Limpa o campo após enviar a resposta
         } else {
-          const errorData = await response.json();
-          console.error("Erro ao enviar a resposta:", errorData);
+          console.error("Erro ao enviar a resposta:", response.data);
         }
       } catch (error) {
         console.error("Erro ao enviar a resposta:", error);
@@ -110,21 +97,19 @@ export default function Reclamation() {
   
   const handleDeleteResponse = async (responseId) => {
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/${responseId}/`,
+      const response = await axiosInstance.delete(
+        `/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/${responseId}/`,
         {
-          method: 'DELETE',
           headers: {
             Authorization: `Bearer ${localStorage.getItem('access_token')}`,
           },
         }
       );
   
-      if (response.ok) {
+      if (response.status === 204) {
         setResponses(responses.filter((res) => res.id !== responseId));
       } else {
-        const errorData = await response.json();
-        console.error('Erro ao deletar a resposta:', errorData);
+        console.error('Erro ao deletar a resposta:', response.data);
       }
     } catch (error) {
       console.error('Erro ao deletar a resposta:', error);
@@ -157,52 +142,46 @@ export default function Reclamation() {
           <div className="mb-4">
             <h5>Respostas</h5>
             {responses.length > 0 ? (
-                responses.map((response, index) => (
-                  <Card key={index} className="mb-3">
-                    <Card.Body>
-                      <div className="d-flex justify-content-between">
-                        <div>
-                          <strong>
-                            <Link to={`/perfil/${response.author_slug}`}>
-                              @{response.author}
-                            </Link>
-                          </strong>
-                          {' '}escreveu:
-                        </div>
-                        <small>{response.created_at}</small>
+              responses.map((response, index) => (
+                <Card key={index} className="mb-3">
+                  <Card.Body>
+                    <div className="d-flex justify-content-between">
+                      <div>
+                        <strong>
+                          <Link to={`/perfil/${response.author_slug}`}>
+                            @{response.author}
+                          </Link>
+                        </strong>
+                        {' '}escreveu:
                       </div>
-                      <p>{response.text}</p>
-                      {user.name === response.author && ( // Verifica se o usuário logado é o autor
-                        <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteResponse(response.id)}
-                        >
-                          Deletar
-                        </Button>
-                      )}
-                    </Card.Body>
-                  </Card>
-                ))
-              ) : (
+                      <small>{response.created_at}</small>
+                    </div>
+                    <p>{response.text}</p>
+                    {user.name === response.author && ( // Verifica se o usuário logado é o autor
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteResponse(response.id)}
+                      >
+                        Deletar
+                      </Button>
+                    )}
+                  </Card.Body>
+                </Card>
+              ))
+            ) : (
               <p>Ainda não há respostas para esta reclamação.</p>
             )}
-
           </div>
 
           <Form onSubmit={handleReclamationSubmit}>
-            <Form.Group controlId="reclamationInput" data-color-mode="light" className="mb-3">
-              <Form.Label>Escreva sua reclamação</Form.Label>
-              <MDEditor
-                value={newReclamation}
-                onChange={handleReclamationChange}
-                preview="edit"
-              />
+            <Form.Group controlId="responseInput" className="mb-3" data-color-mode="light">
+              <Form.Label>Escreva sua resposta</Form.Label>
+              <MDEditor value={newReclamation} onChange={handleReclamationChange} preview="edit" />
             </Form.Group>
-
             <div className="text-center">
-              <Button variant="danger" type="submit" disabled={newReclamation.trim() === ""}>
-                Enviar Reclamação
+              <Button variant="dark" type="submit" disabled={newReclamation.trim() === ""}>
+                Enviar Resposta
               </Button>
             </div>
           </Form>

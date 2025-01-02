@@ -2,9 +2,8 @@ import { useState, useEffect } from 'react';
 import { Container, Row, Col, Form, Button } from 'react-bootstrap';
 import { useNavigate, useParams } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
-import axios from 'axios';
-
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
+import axiosInstance from '../../../../interceptors/axios';
 
 export default function EditDeleteQuestion() {
   const [title, setTitle] = useState("");
@@ -23,40 +22,33 @@ export default function EditDeleteQuestion() {
         return;
       }
 
-      // Buscar dados completos do usuário (ID e slug)
-      const userResponse = await axios.get('http://127.0.0.1:8000/api/v1/account', {
-        headers: { Authorization: `Bearer ${token}` },
+      const userResponse = await axiosInstance.get('/api/v1/account', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
       });
-
       const userSlug = userResponse.data.slug;
-      const userId = userResponse.data.id;  // Captura o ID do usuário
+      const userId = userResponse.data.id;
       setUserId(userId);
 
-      // Verificar permissão
       if (userSlug !== profile_slug) {
         navigate('/404');
         return;
       }
 
-      // Buscar dados da comunidade (ID)
       fetchCommunityData();
     } catch (error) {
-      console.error('Erro ao buscar dados do usuário ou verificar permissão:', error);
+      console.error('Erro ao buscar dados do usuário:', error);
       navigate('/404');
     }
   };
 
   const fetchCommunityData = async () => {
     try {
-      // Buscar dados completos da comunidade (ID)
-      const communityResponse = await axios.get(`http://127.0.0.1:8000/api/v1/communities/${slug}/`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem('access_token')}` },
-      });
-
-      const communityId = communityResponse.data.id;  // Captura o ID da comunidade
+      const communityResponse = await axiosInstance.get(`/api/v1/communities/${slug}/`);
+      const communityId = communityResponse.data.id;
       setCommunityId(communityId);
 
-      // Buscar dados da pergunta
       fetchQuestion();
     } catch (error) {
       console.error('Erro ao buscar dados da comunidade:', error);
@@ -66,14 +58,8 @@ export default function EditDeleteQuestion() {
 
   const fetchQuestion = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
-      const response = await axios.get(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`,
-        config
+      const response = await axiosInstance.get(
+        `/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`
       );
 
       setTitle(response.data.title || "");
@@ -88,25 +74,14 @@ export default function EditDeleteQuestion() {
     e.preventDefault();
 
     try {
-      const token = localStorage.getItem("access_token");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
+      const payload = { title, content: question, user: userId, community: communityId };
 
-      const payload = {
-        title,
-        content: question,
-        user: userId,      // Enviando o ID do usuário
-        community: communityId,  // Enviando o ID da comunidade
-      };
-
-      await axios.put(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`,
-        payload,
-        config
+      await axiosInstance.put(
+        `/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`,
+        payload
       );
 
-      navigate(`/comunidades/${slug}`);
+      navigate(`/api/v1/comunidades/${slug}/`);
     } catch (error) {
       console.error("Erro ao atualizar a pergunta:", error);
     }
@@ -114,17 +89,11 @@ export default function EditDeleteQuestion() {
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem("access_token");
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
-      await axios.delete(
-        `http://127.0.0.1:8000/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`,
-        config
+      await axiosInstance.delete(
+        `/api/v1/communities/${slug}/profile/${profile_slug}/questions/${question_slug}/`
       );
 
-      navigate(`/comunidades/${slug}`);
+      navigate(`/api/v1/comunidades/${slug}`);
     } catch (error) {
       console.error("Erro ao excluir a pergunta:", error);
     }

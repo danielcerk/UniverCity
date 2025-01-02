@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import axiosInstance from '../../../interceptors/axios';
 
 export default function Account() {
   const [isEditing, setIsEditing] = useState(false);
@@ -18,39 +18,21 @@ export default function Account() {
 
   const fetchUserData = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.error('Token não foi localizado');
-        return;
-      }
-
-      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
+      const response = await axiosInstance.get('/api/v1/account');
       setUser(response.data);
     } catch (error) {
       console.error('Erro ao buscar dados do usuário:', error);
+
+      if (error.response?.status === 401) {
+        console.error('Token inválido ou expirado.');
+        navigate('/login');
+      }
     }
   };
 
   const handleDelete = async () => {
     try {
-      const token = localStorage.getItem('access_token');
-      if (!token) {
-        console.error('Token não encontrado');
-        return;
-      }
-
-      await axios.delete(`http://127.0.0.1:8000/api/v1/profiles/${user.slug}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      // Limpar informações de autenticação e redirecionar
+      await axiosInstance.delete(`/api/v1/profiles/${user.slug}/`);
       localStorage.removeItem('access_token');
       navigate('/login');
       console.log('Conta excluída com sucesso.');
@@ -62,27 +44,13 @@ export default function Account() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('access_token');
-    if (!token) {
-      console.error('Token não encontrado');
-      return;
-    }
-
     try {
-      const response = await axios.put(
-        `http://127.0.0.1:8000/api/v1/profiles/${user.slug}/`,
-        {
-          name: user.name,
-          email: user.email,
-          phone: user.phone ? user.phone.toString() : '',
-          biografy: user.biografy,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
+      const response = await axiosInstance.put(`/api/v1/profiles/${user.slug}/`, {
+        name: user.name,
+        email: user.email,
+        phone: user.phone ? user.phone.toString() : '',
+        biografy: user.biografy,
+      });
 
       setUser(response.data);
       setIsEditing(false);
@@ -96,16 +64,14 @@ export default function Account() {
     document.title = 'UniverCity | Minha Conta';
 
     const token = localStorage.getItem('access_token');
-
-    if (token) {
-      setIsAuth(true);
-    } else {
+    if (!token) {
       setIsAuth(false);
       navigate('/login');
+    } else {
+      setIsAuth(true);
+      fetchUserData();
     }
-
-    fetchUserData();
-  }, []);
+  }, [navigate]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -126,7 +92,6 @@ export default function Account() {
               <h4>Informações Pessoais</h4>
               {isEditing ? (
                 <Form onSubmit={handleSubmit}>
-                  {/* Campos de edição */}
                   <Form.Group controlId="name" className="mb-3">
                     <Form.Label><strong>Nome:</strong></Form.Label>
                     <Form.Control
@@ -147,7 +112,6 @@ export default function Account() {
                       placeholder="Digite seu e-mail"
                     />
                   </Form.Group>
-
                   <Form.Group controlId="phone" className="mb-3">
                     <Form.Label><strong>Número de Telefone:</strong></Form.Label>
                     <Form.Control
@@ -158,13 +122,12 @@ export default function Account() {
                       placeholder="Digite seu número de telefone"
                     />
                   </Form.Group>
-
                   <Form.Group controlId="biografy" className="mb-3">
                     <Form.Label><strong>Sua biografia:</strong></Form.Label>
                     <Form.Control
-                      as="textarea" // Define o elemento como textarea
+                      as="textarea"
                       name="biografy"
-                      rows={10} // Define o número de linhas para aumentar a altura
+                      rows={10}
                       value={user.biografy}
                       onChange={handleChange}
                       placeholder="Sua biografia"
