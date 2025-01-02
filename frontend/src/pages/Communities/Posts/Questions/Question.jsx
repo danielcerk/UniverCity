@@ -3,14 +3,17 @@ import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
 import MDEditor from '@uiw/react-md-editor';
 import { useNavigate, useParams, Link } from 'react-router-dom';
+import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
+import axios from 'axios';
 
 export default function Question() {
   const { slug, question_slug } = useParams();
+  const [user, setUser] = useState(null);
   const [question, setQuestion] = useState({
+    id: "",
     title: "",
-    content: "",
-    like: "",
-    dislike: "",
+    like: false,
+    dislike: false,
     author: "",
     author_slug: "",
     created_at: "",
@@ -20,7 +23,19 @@ export default function Question() {
   const [responses, setResponses] = useState([]);
   const navigate = useNavigate();
 
-  // Função para buscar a pergunta da API
+  const getUserData = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/api/v1/account', {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+      setUser(response.data);
+    } catch (error) {
+      console.error('Erro ao conseguir os dados do usuário', error);
+    }
+  };
+
   const fetchQuestion = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}`);
@@ -32,44 +47,102 @@ export default function Question() {
     }
   };
 
-  // Função para buscar as respostas da API
   const fetchResponses = async () => {
     try {
       const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/`);
       const data = await response.json();
-      setResponses(data.results)
-
+      setResponses(data.results);
     } catch (error) {
       console.error("Erro ao carregar respostas:", error);
     }
   };
 
-  // Carrega a pergunta e as respostas assim que o componente for montado
   useEffect(() => {
+    getUserData();
     fetchQuestion();
     fetchResponses();
   }, [slug, question_slug]);
 
-  // Atualizando o título após o estado da pergunta ser carregado
   useEffect(() => {
     if (question.title) {
       document.title = `UniverCity | ${question.title}`;
     }
   }, [question.title]);
 
-  // Envia uma nova resposta
-  const handleResponseSubmit = (e) => {
+  const toggleLikeDislike = (type) => {
+    setQuestion((prev) => ({
+      ...prev,
+      like: type === "like" ? !prev.like : false,
+      dislike: type === "dislike" ? !prev.dislike : false,
+    }));
+  };
+
+  const toggleResponseLikeDislike = (index, type) => {
+    setResponses((prev) =>
+      prev.map((response, i) =>
+        i === index
+          ? {
+              ...response,
+              like: type === "like" ? !response.like : response.like,
+              dislike: type === "dislike" ? !response.dislike : response.dislike,
+            }
+          : response
+      )
+    );
+  };
+
+  // Envia uma nova resposta para a API
+  const handleResponseSubmit = async (e) => {
     e.preventDefault();
     if (newResponse.trim() !== "") {
-      setResponses([
-        ...responses,
+      try {
+        const response = await fetch(`http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('access_token')}`, // Se o token de autenticação for necessário
+          },
+          body: JSON.stringify({
+            user: user.id,
+            text: newResponse,
+            content_type: 17,
+            object_id: question.id,
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          setResponses([...responses, data]);
+          setNewResponse(""); // Limpa o campo após enviar a resposta
+        } else {
+          console.error("Erro ao enviar a resposta:", response.statusText);
+        }
+      } catch (error) {
+        console.error("Erro ao enviar a resposta:", error);
+      }
+    }
+  };
+
+  const handleDeleteResponse = async (responseId) => {
+    try {
+      const response = await fetch(
+        `http://127.0.0.1:8000/api/v1/communities/${slug}/questions/${question_slug}/responses/${responseId}/`,
         {
-          user: "Você",
-          content: newResponse,
-          timestamp: "Agora",
-        },
-      ]);
-      setNewResponse("");
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        }
+      );
+  
+      if (response.ok) {
+        setResponses(responses.filter((res) => res.id !== responseId));
+      } else {
+        const errorData = await response.json();
+        console.error('Erro ao deletar a resposta:', errorData);
+      }
+    } catch (error) {
+      console.error('Erro ao deletar a resposta:', error);
     }
   };
 
@@ -78,9 +151,7 @@ export default function Question() {
       <Row>
         <Sidebar />
 
-        {/* Conteúdo Principal */}
         <Col xs={12} md={9} className="p-5">
-          {/* Pergunta */}
           <Card className="mb-4">
             {question ? (
               <>
@@ -97,7 +168,6 @@ export default function Question() {
             )}
           </Card>
 
-          {/* Seção de Respostas */}
           <div className="mb-4">
             <h5>Respostas</h5>
             {responses.length > 0 ? (
@@ -109,6 +179,15 @@ export default function Question() {
                       <small>{response.created_at}</small>
                     </div>
                     <p>{response.text}</p>
+                    {user.name === response.author && ( // Verifica se o usuário logado é o autor
+                        <Button
+                          variant="danger"
+                          size="sm"
+                          onClick={() => handleDeleteResponse(response.id)}
+                        >
+                          Deletar
+                        </Button>
+                    )}
                   </Card.Body>
                 </Card>
               ))
@@ -117,35 +196,11 @@ export default function Question() {
             )}
           </div>
 
-          {/* Espaço para nova resposta */}
           <Form onSubmit={handleResponseSubmit}>
             <Form.Group controlId="responseInput" className="mb-3" data-color-mode="light">
               <Form.Label>Escreva sua resposta</Form.Label>
-              <MDEditor
-                value={newResponse}
-                onChange={setNewResponse}
-                preview="edit"
-                components={{
-                  toolbar: (command, disabled, executeCommand) => {
-                    if (command.keyCommand === 'code') {
-                      return (
-                        <button
-                          aria-label="Insert code"
-                          disabled={disabled}
-                          onClick={(evn) => {
-                            evn.stopPropagation();
-                            executeCommand(command, command.groupName);
-                          }}
-                        >
-                          Code
-                        </button>
-                      );
-                    }
-                  },
-                }}
-              />
+              <MDEditor value={newResponse} onChange={setNewResponse} preview="edit" />
             </Form.Group>
-
             <div className="text-center">
               <Button variant="dark" type="submit" disabled={newResponse.trim() === ""}>
                 Enviar Resposta
