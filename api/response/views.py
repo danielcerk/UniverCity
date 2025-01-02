@@ -47,7 +47,7 @@ class ResponseViewSet(ModelViewSet):
             # Se o profile_slug for fornecido, buscamos as respostas associadas ao perfil
             if profile_slug:
                 profile = Profile.objects.get(slug=profile_slug)
-                response = ResModel.objects.filter(user=profile)
+                response = ResModel.objects.filter(user=profile.user)
             else:
                 # Caso contrário, retornamos as respostas associadas à questão ou reclamação
                 if question_slug:

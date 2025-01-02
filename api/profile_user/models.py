@@ -65,5 +65,5 @@ class Profile(models.Model):
 
     def __str__(self):
         
-        return f'Perfil de {self.user.name} - ( {self.user.first_name} {self.user.last_name} )'
+        return f'Perfil de {self.user.name} - ( {self.user.full_name} )'
 

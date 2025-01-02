@@ -13,7 +13,7 @@ class ReclamationsSerializer(serializers.ModelSerializer):
     class Meta:
 
         model = Reclamations
-        fields = ['community', 'user', 'author', 'author_slug', 'slug', 'title', 'content',
+        fields = ['id','community', 'user', 'author', 'author_slug', 'slug', 'title', 'content',
                   'like', 'dislike', 'responses_count', 'is_resolved',
                   'created_at', 'updated_at']
 
