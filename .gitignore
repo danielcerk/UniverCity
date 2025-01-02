@@ -6,6 +6,8 @@ __pycache__/
 .env
 REQUIREMENTS_APP.md
 
+db.sqlite3
+
 # C extensions
 *.so
 
