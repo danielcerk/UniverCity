@@ -132,15 +132,15 @@ export default function Navbar() {
 
               <li className="nav-item texto-com-hover">
                 <Link to="/conta" className="nav-link active">
-                  Olá, Estudante! <i class="fa-solid fa-user px-2"></i>
+                  Olá, Estudante! <i className="fa-solid fa-user px-2"></i>
                 </Link>
-                <div class="nav-underline linha"></div>
+                <div className="nav-underline linha"></div>
               </li>
               <li className="nav-item texto-com-hover">
                 <button className="nav-link active" onClick={doLogout}>
-                  Sair <i class="fa-solid fa-right-from-bracket"></i>
+                  Sair <i className="fa-solid fa-right-from-bracket"></i>
                 </button>
-                <div class="nav-underline linha"></div>
+                <div className="nav-underline linha"></div>
               </li>
             </ul>
           ) : (
@@ -149,13 +149,13 @@ export default function Navbar() {
                 <Link to="/comunidades" className="nav-link">
                   Universidades
                 </Link>
-                <div class="nav-underline linha"></div>
+                <div className="nav-underline linha"></div>
               </li>
               <li className="nav-item texto-com-hover">
                 <Link to="/login" className="nav-link">
                   Login
                 </Link>
-                <div class="nav-underline linha"></div>
+                <div className="nav-underline linha"></div>
               </li>
               <li className="nav-item">
                 <Link to="/cadastro" className="btn bg-page-red text-white">

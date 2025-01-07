@@ -88,15 +88,15 @@ export default function LandingPage() {
               <ul className="list-unstyled">
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Faça perguntas e compartilhe soluções. <i class="fa-solid fa-lightbulb"></i>
+                  Faça perguntas e compartilhe soluções. <i className="fa-solid fa-lightbulb"></i>
                 </li>
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Participe de discussões. <i class="fa-solid fa-comments"></i>
+                  Participe de discussões. <i className="fa-solid fa-comments"></i>
                 </li>
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Faça amizades. <i class="fa-solid fa-user-group"></i>
+                  Faça amizades. <i className="fa-solid fa-user-group"></i>
                 </li>
               </ul>
               <Link to="/login" className="btn btn-dark mt-4 fs-5 fw-semibold p-2 d-flex flex-column gap-1" id="custom-btn-init">
