@@ -14,41 +14,52 @@ export default function LandingPage() {
   return (
     <div>
    <header
-    className="text-white text-center py-5 d-flex position-relative bg-black"
-    style={{
-      minHeight: '550px'
-    }}>
+    className="text-white text-center py-5 d-flex position-relative bg-black header-langing-page">
     {/* Camada de imagem com opacidade */}
     <div
       className="position-absolute top-0 start-0 w-100 h-100"
       style={{
-        backgroundImage: "url('https://img.freepik.com/free-photo/portrait-smiling-female-university-student-lying-green-grass-holding-book-hand_23-2148093058.jpg?t=st=1736212020~exp=1736215620~hmac=7664332885b4663ec194fd306c82d26fe5eb927b1a25f940e2ab359526d63261&w=740')",
+        backgroundImage: "url('https://i.pinimg.com/736x/ad/f9/a4/adf9a4cea463355da988abc14e0b5f13.jpg')",
      
         backgroundPosition: 'center',
-        backgroundAttachment: 'fixed', // Efeito parallax
-        opacity: 0.50, // Opacidade da imagem
-        zIndex: 1, // Garante que a imagem fique atrás do conteúdo
+        backgroundAttachment: 'fixed', 
+        opacity: 0.50, 
+        zIndex: 1, 
       }}
     ></div>
 
     {/* Conteúdo centralizado */}
     <div className="container d-flex flex-column justify-content-center align-items-center position-relative " style={{zIndex: 2}}>
+      <br />
+      <br />
       <h1 className="display-4 fw-bold" data-aos="fade-up">
         Bem-vindo à UniverCity!
       </h1>
       <p className="lead" data-aos="fade-up" data-aos-delay="200">
         Conecte-se, colabore e faça parte de algo incrível. Junte-se agora!
       </p>
-      <Link
-        to="/faq"
-        className="btn btn-light btn-lg mt-3"
-        data-aos="fade-up"
-        data-aos-delay="400"
+      <div className='d-flex gap-md-3 flex-column flex-md-row align-items-center justify-content-center'>
+        <Link
+          to="/conta"
+          className="btn btn-lg mt-3 "
+          data-aos="fade-up"
+          data-aos-delay="400"
+          id='custom-btn-student'
+        >
+          Área do Estudante
+        </Link>
 
-        id='custom-btn'
-      >
-        Saiba Mais
-      </Link>
+
+        <Link
+          to="/faq"
+          className="btn btn-light btn-lg mt-3"
+          data-aos="fade-up"
+          data-aos-delay="400"
+          id='custom-btn-about'
+        >
+          Saiba Mais
+        </Link>
+      </div>
 
     </div>
   </header>
@@ -77,19 +88,19 @@ export default function LandingPage() {
               <ul className="list-unstyled">
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Faça perguntas e compartilhe soluções.
+                  Faça perguntas e compartilhe soluções. <i class="fa-solid fa-lightbulb"></i>
                 </li>
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Participe de discussões.
+                  Participe de discussões. <i class="fa-solid fa-comments"></i>
                 </li>
                 <li>
                   <i className="bi bi-check-circle text-success me-2"></i>{" "}
-                  Faça amizades.
+                  Faça amizades. <i class="fa-solid fa-user-group"></i>
                 </li>
               </ul>
-              <Link to="/login" className="btn btn-dark mt-4">
-                Junte-se Agora
+              <Link to="/login" className="btn btn-dark mt-4 fs-5 fw-semibold p-2 d-flex flex-column gap-1" id="custom-btn-init">
+              <span>Junte-se</span> <div className='w-100 text-end px-2'><i className="fa-solid fa-circle-arrow-right fs-4"></i></div>
               </Link>
             </div>
           </div>

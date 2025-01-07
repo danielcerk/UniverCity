@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
 
+@import url('./assets/css/navbar.css');
+@import url('./assets/css/landingpage.css');
+
+
 *{
   margin: 0;
   padding: 0;
@@ -15,37 +19,8 @@ h1, h2, h3, h4, h5, h6{
 }
 
 
-/* Navbar */
-#navbar-main {
-  transition: all 0.3s ease-in-out;
-}
-#navbar-main > .container > #navbarContent > ul > .nav-item > .nav-link, #navbar-main > .container > #navbarContent > form > input::placeholder, #navbar-main > .container > .navbar-brand {
-  transition: all 0.3s ease-in-out;
-  color: white !important;
-}
-
-#navbar-main.navbar-scrolled {
-  background-color: rgb(255, 255, 255); /* Mudar o fundo ou adicionar outro estilo */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Adicionar uma sombra sutil */
-}
-
-#navbar-main.navbar-scrolled > .container > #navbarContent > ul > .nav-item > .nav-link, 
-#navbar-main.navbar-scrolled > .container > #navbarContent > form > input::placeholder, #navbar-main.navbar-scrolled > .container > .navbar-brand{
-  color: rgb(0, 0, 0) !important;
-}
-
-/* banner landingpage */
-#custom-btn {
-  border: 2px solid white; 
-  background-color: transparent;
-  color: white; 
-  transition: all 0.3s ease; 
-}
-
-#custom-btn:hover {
-  background-color: white; 
-  color: #333;
-  transform: translateY(-5px); 
+.bg-page-red{
+  background-color: #c0392b !important;
 }
 
 

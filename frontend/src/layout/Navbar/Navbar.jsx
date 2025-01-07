@@ -37,31 +37,45 @@ export default function Navbar() {
 
   // Verificar se o usuário está autenticado
   useEffect(() => {
-    const token = localStorage.getItem('access_token');
-    setIsAuth(!!token);
-  }, []);
-
-   // Verificar o scroll e alterar o estilo da navbar
-   useEffect(() => {
     const navbar = document.getElementById('navbar-main');
-    const handleScroll = () => {
-      if (navbar) {
-        if (window.scrollY > 0) {
-          navbar.classList.add('navbar-scrolled');
+    const navBtnMobile = document.getElementById('navbar-btn-mobile');
+
+    // Verificar se estamos na Landing Page ou em outras páginas
+    if (location.pathname === "/") {
+      const handleScroll = () => {
+        if (navbar) {
+          if (window.scrollY > 0) {
+            navbar.classList.add('navbar-scrolled');
+          } else {
+            navbar.classList.remove('navbar-scrolled');
+          }
         } else {
-          navbar.classList.remove('navbar-scrolled');
+          console.error('Elemento navbar não encontrado');
         }
-      } else {
-        console.error('Elemento navbar não encontrado');
+      };
+
+      const handleClick = () => {
+        if (navbar) {
+          navbar.classList.toggle('navbar-scrolled'); // Alterna a classe no clique
+        } else {
+          console.error('Elemento navbar não encontrado');
+        }
+      };
+
+      window.addEventListener('scroll', handleScroll);
+      navBtnMobile?.addEventListener('click', handleClick);
+
+      return () => {
+        window.removeEventListener('scroll', handleScroll);
+        navBtnMobile?.removeEventListener('click', handleClick);
+      };
+    } else {
+      // Em qualquer outra página, mantenha a classe 'navbar-scrolled'
+      if (navbar) {
+        navbar.classList.add('navbar-scrolled');
       }
-    };
-  
-    window.addEventListener('scroll', handleScroll);
-  
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-    };
-  }, []);
+    }
+  }, [location.pathname]);
 
 
 
@@ -82,13 +96,14 @@ export default function Navbar() {
 
         {/* Botão do menu mobile */}
         <button
-          className="navbar-toggler"
+          className="navbar-toggler navbar-btn-mobile py-0 my-3"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
           aria-controls="navbarContent"
           aria-expanded="false"
           aria-label="Toggle navigation"
+          id='navbar-btn-mobile'
         >
           <span className="navbar-toggler-icon"></span>
         </button>
@@ -96,7 +111,7 @@ export default function Navbar() {
         {/* Conteúdo do Navbar */}
         <div className="collapse navbar-collapse" id="navbarContent">
           {/* Barra de busca centralizada */}
-          <form className="d-flex mx-auto " style={{ width: '40%' }} onSubmit={getSearch}>
+          <form className="d-flex mx-auto my-2 navbar-form-search" onSubmit={getSearch}>
             <input
               className="form-control me-2 bg-transparent "
               type="search"
@@ -106,39 +121,44 @@ export default function Navbar() {
               onChange={(e) => setSearch(e.target.value)}
             />
             <button 
-              className="px-3 border-0 bg-dark text-white rounded fa-solid fa-magnifying-glass btn-hover" 
+              className="px-3 border-0 bg-dark text-white rounded fa-solid fa-magnifying-glass" 
               type="submit">
             </button>
           </form>
 
           {/* Links de navegação */}
           {isAuth ? (
-            <ul className="navbar-nav ms-auto fw-semibold">
-              <li className="nav-item">
-                <button className="nav-link" onClick={doLogout}>
-                  Sair
-                </button>
-              </li>
-              <li className="nav-item">
-                <Link to="/conta" className="nav-link">
-                  Olá, Estudante!
+            <ul className="navbar-nav ms-auto fw-semibold nav_list gap-3">
+
+              <li className="nav-item texto-com-hover">
+                <Link to="/conta" className="nav-link active">
+                  Olá, Estudante! <i class="fa-solid fa-user px-2"></i>
                 </Link>
+                <div class="nav-underline linha"></div>
+              </li>
+              <li className="nav-item texto-com-hover">
+                <button className="nav-link active" onClick={doLogout}>
+                  Sair <i class="fa-solid fa-right-from-bracket"></i>
+                </button>
+                <div class="nav-underline linha"></div>
               </li>
             </ul>
           ) : (
-            <ul className="navbar-nav ms-auto">
-              <li className="nav-item">
+            <ul className="navbar-nav ms-auto gap-3">
+              <li className="nav-item texto-com-hover">
                 <Link to="/comunidades" className="nav-link">
                   Universidades
                 </Link>
+                <div class="nav-underline linha"></div>
               </li>
-              <li className="nav-item">
+              <li className="nav-item texto-com-hover">
                 <Link to="/login" className="nav-link">
                   Login
                 </Link>
+                <div class="nav-underline linha"></div>
               </li>
               <li className="nav-item">
-                <Link to="/cadastro" className="btn btn-dark">
+                <Link to="/cadastro" className="btn bg-page-red text-white">
                   Cadastre-se
                 </Link>
               </li>
