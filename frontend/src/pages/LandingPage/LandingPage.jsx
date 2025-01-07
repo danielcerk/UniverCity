@@ -1,18 +1,59 @@
 import {Link} from 'react-router-dom'
+import { useEffect } from 'react';
+
+import AOS from "aos";
+import "aos/dist/aos.css";
+
 
 export default function LandingPage() {
 
+  useEffect(() => {
+    AOS.init({ duration: 1500 }); // Inicia o AOS e define a duração da animação
+  }, []);
+
   return (
     <div>
-      <header className="bg-dark text-white text-center py-5">
-        <div className="container">
-          <h1 className="display-4">Bem-vindo à UniverCity!</h1>
-          <p className="lead">
-            Conecte-se, colabore e faça parte de algo incrível. Junte-se agora!
-          </p>
-          <Link to='/faq' className="btn btn-light btn-lg mt-3">Saiba Mais</Link>
-        </div>
-      </header>
+   <header
+    className="text-white text-center py-5 d-flex position-relative bg-black"
+    style={{
+      minHeight: '550px'
+    }}>
+    {/* Camada de imagem com opacidade */}
+    <div
+      className="position-absolute top-0 start-0 w-100 h-100"
+      style={{
+        backgroundImage: "url('https://img.freepik.com/free-photo/portrait-smiling-female-university-student-lying-green-grass-holding-book-hand_23-2148093058.jpg?t=st=1736212020~exp=1736215620~hmac=7664332885b4663ec194fd306c82d26fe5eb927b1a25f940e2ab359526d63261&w=740')",
+     
+        backgroundPosition: 'center',
+        backgroundAttachment: 'fixed', // Efeito parallax
+        opacity: 0.50, // Opacidade da imagem
+        zIndex: 1, // Garante que a imagem fique atrás do conteúdo
+      }}
+    ></div>
+
+    {/* Conteúdo centralizado */}
+    <div className="container d-flex flex-column justify-content-center align-items-center position-relative " style={{zIndex: 2}}>
+      <h1 className="display-4 fw-bold" data-aos="fade-up">
+        Bem-vindo à UniverCity!
+      </h1>
+      <p className="lead" data-aos="fade-up" data-aos-delay="200">
+        Conecte-se, colabore e faça parte de algo incrível. Junte-se agora!
+      </p>
+      <Link
+        to="/faq"
+        className="btn btn-light btn-lg mt-3"
+        data-aos="fade-up"
+        data-aos-delay="400"
+
+        id='custom-btn'
+      >
+        Saiba Mais
+      </Link>
+
+    </div>
+  </header>
+
+
 
       {/* About Section */}
       <section className="py-5" id="community">
