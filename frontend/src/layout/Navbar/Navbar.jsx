@@ -37,6 +37,14 @@ export default function Navbar() {
 
   // Verificar se o usuário está autenticado
   useEffect(() => {
+
+    const token = localStorage.getItem('access_token');
+    if (token) {
+      setIsAuth(true);  // Define o estado como verdadeiro se o token existir
+    } else {
+      setIsAuth(false);  // Se não houver token, garante que o estado seja falso
+    }
+
     const navbar = document.getElementById('navbar-main');
     const navBtnMobile = document.getElementById('navbar-btn-mobile');
 
