@@ -35,57 +35,53 @@ export default function Navbar() {
     }
   };
 
-  // Verificar se o usuário está autenticado
   useEffect(() => {
-
     const token = localStorage.getItem('access_token');
     if (token) {
-      setIsAuth(true);  // Define o estado como verdadeiro se o token existir
+      setIsAuth(true);
     } else {
-      setIsAuth(false);  // Se não houver token, garante que o estado seja falso
+      setIsAuth(false);
     }
-
+  
     const navbar = document.getElementById('navbar-main');
     const navBtnMobile = document.getElementById('navbar-btn-mobile');
-
+  
+    // Função para lidar com o scroll
+    const handleScroll = () => {
+      if (navbar) {
+        if (window.scrollY > 0) {
+          navbar.classList.add('navbar-scrolled');
+        } else {
+          navbar.classList.remove('navbar-scrolled');
+        }
+      }
+    };
+  
+    // Função para alternar o estado do navbar ao clicar no botão
+    const handleClick = () => {
+      // Não alternar a classe de scroll se a página já tiver sido rolada
+      if (window.scrollY === 0) {
+        navbar?.classList.toggle('navbar-scrolled');
+      }
+      // Aqui você pode adicionar outros comportamentos para o botão, se necessário
+    };
+  
     // Verificar se estamos na Landing Page ou em outras páginas
     if (location.pathname === "/") {
-      const handleScroll = () => {
-        if (navbar) {
-          if (window.scrollY > 0) {
-            navbar.classList.add('navbar-scrolled');
-          } else {
-            navbar.classList.remove('navbar-scrolled');
-          }
-        } else {
-          console.error('Elemento navbar não encontrado');
-        }
-      };
-
-      const handleClick = () => {
-        if (navbar) {
-          navbar.classList.toggle('navbar-scrolled'); // Alterna a classe no clique
-        } else {
-          console.error('Elemento navbar não encontrado');
-        }
-      };
-
       window.addEventListener('scroll', handleScroll);
       navBtnMobile?.addEventListener('click', handleClick);
-
+  
       return () => {
         window.removeEventListener('scroll', handleScroll);
         navBtnMobile?.removeEventListener('click', handleClick);
       };
     } else {
-      // Em qualquer outra página, mantenha a classe 'navbar-scrolled'
       if (navbar) {
         navbar.classList.add('navbar-scrolled');
       }
     }
   }, [location.pathname]);
-
-
+  
 
   return (
     <nav className="navbar navbar-expand-lg position-fixed w-100 top-0 z-index-5" style={{
