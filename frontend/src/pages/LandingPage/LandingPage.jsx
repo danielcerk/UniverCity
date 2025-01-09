@@ -5,6 +5,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 
 
+
 export default function LandingPage() {
 
   useEffect(() => {
@@ -17,7 +18,7 @@ export default function LandingPage() {
     className="text-white text-center py-5 d-flex position-relative bg-black header-langing-page">
     {/* Camada de imagem com opacidade */}
     <div
-      className="position-absolute top-0 start-0 w-100 h-100"
+      className="position-absolute top-0 start-0 w-100 h-100 py-5"
       style={{
         backgroundImage: "url('https://i.pinimg.com/736x/ad/f9/a4/adf9a4cea463355da988abc14e0b5f13.jpg')",
      
@@ -99,9 +100,11 @@ export default function LandingPage() {
                   Faça amizades. <i className="fa-solid fa-user-group"></i>
                 </li>
               </ul>
-              <Link to="/login" className="btn btn-dark mt-4 fs-5 fw-semibold p-2 d-flex flex-column gap-1" id="custom-btn-init">
-              <span>Junte-se</span> <div className='w-100 text-end px-2'><i className="fa-solid fa-circle-arrow-right fs-4"></i></div>
-              </Link>
+              <div className='w-100 d-flex justify-content-md-start justify-content-center'>
+                <Link to="/login" className="text-dark mt-4 fs-5 fw-semibold py-2 d-flex align-items-center text-decoration-none gap-1 rounded-5" id="custom-btn-init">
+                <span className='ps-4 '>Integre-se</span> <div className='px-2'><i className="fa-solid fa-circle-arrow-right p-1 fs-3" ></i></div>
+                </Link>
+              </div>
             </div>
           </div>
         </div>

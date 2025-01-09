@@ -38,7 +38,7 @@
 
 #custom-btn-init{
   transition: all 0.3s ease; 
-  max-width: 110px;
+  border: 1px solid gray;
 }
 
 #custom-btn-init:hover {
@@ -51,8 +51,8 @@
 
 
 
-@media (max-width:991px){
+/* @media (max-width:991px){
   .header-langing-page{
     min-height: 400px;
   }
-}
+} */

@@ -47,16 +47,21 @@
 .texto-com-hover {
   position: relative;
   display: inline-block;
+
 }
-.texto-com-hover .linha {
+
+.texto-com-hover::after {
+  content: '';
   position: absolute;
-  left: 0;
+  left: 50%;
   bottom: 0;
   width: 0;
-  height: 4px;
-  background-color: #d9534f ;
-  transition: width 0.3s ease;
+  height: 2px; /* Espessura da linha */
+  background-color: #d9534f;
+  transition: width 0.3s ease, left 0.3s ease;
 }
-.texto-com-hover:hover .linha {
+
+.texto-com-hover:hover::after {
   width: 100%;
+  left: 0;
 }

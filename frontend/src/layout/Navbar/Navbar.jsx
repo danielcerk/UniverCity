@@ -104,7 +104,7 @@ export default function Navbar() {
 
         {/* Botão do menu mobile */}
         <button
-          className="navbar-toggler navbar-btn-mobile py-0 my-3"
+          className="navbar-toggler navbar-btn-mobile my-3"
           type="button"
           data-bs-toggle="collapse"
           data-bs-target="#navbarContent"
@@ -117,7 +117,7 @@ export default function Navbar() {
         </button>
 
         {/* Conteúdo do Navbar */}
-        <div className="collapse navbar-collapse" id="navbarContent">
+        <div className="collapse navbar-collapse px-3 px-md-0" id="navbarContent">
           {/* Barra de busca centralizada */}
           <form className="d-flex mx-auto my-2 navbar-form-search" onSubmit={getSearch}>
             <input
@@ -136,11 +136,11 @@ export default function Navbar() {
 
           {/* Links de navegação */}
           {isAuth ? (
-            <ul className="navbar-nav ms-auto fw-semibold nav_list gap-3">
+            <ul className="navbar-nav ms-auto fw-semibold nav_list gap-3 ">
 
-              <li className="nav-item texto-com-hover">
+              <li className="nav-item texto-com-hover ">
                 <Link to="/conta" className="nav-link active">
-                  Olá, Estudante! <i className="fa-solid fa-user px-2"></i>
+                Painel <i className="fa-brands fa-slack"></i>
                 </Link>
                 <div className="nav-underline linha"></div>
               </li>
