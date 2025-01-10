@@ -23,7 +23,7 @@ export default function Sidebar() {
                 <Col xs={12} md={3} className="p-3">
     
                 <div id="nav-bar" className="bg-dark" style={{marginTop:'100px'}}>
-                <input type="checkbox" id="nav-toggle"></input>
+                <input type="checkbox" id="nav-toggle" ></input>
                 <div id="nav-header">
                     <a id="nav-title" target="_blank">
                         Explore

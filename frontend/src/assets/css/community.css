@@ -1,0 +1,12 @@
+.card-img-community{
+  max-width: 300px;
+  max-height: 200px;
+}
+
+@media (max-width:767px){
+  .card-img-community{
+    max-width: 100%;
+    max-height: auto;
+  }
+  
+}
