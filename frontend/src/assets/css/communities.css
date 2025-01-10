@@ -1,0 +1,41 @@
+.card-community {
+  border: none !important;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  
+}
+
+.card-community:hover {
+  transform: translateY(-5px);
+ 
+}
+
+.card-community .card-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #141414;
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.card-community .card-text {
+  font-size: 0.95rem;
+
+  text-align: justify;
+}
+
+.card-community .card-footer {
+
+  font-size: 0.85rem;
+  color: #bb0000;
+  font-weight: bold;
+  padding: 0.75rem;
+  border-top: 1px solid #eaeaea;
+  text-transform: uppercase;
+}
+
+.card-community .link-dark:hover {
+  text-decoration: none;
+  color: #0056b3;
+}

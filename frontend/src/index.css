@@ -2,6 +2,8 @@
 
 @import url('./assets/css/navbar.css');
 @import url('./assets/css/landingpage.css');
+@import url('./assets/css/home.css');
+@import url('./assets/css/communities.css');
 
 
 *{
@@ -14,6 +16,10 @@ body{
   font-family: 'Roboto', sans-serif;
 }
 
+a, li{
+  list-style: none;
+  text-decoration: none !important;
+}
 
 h1, h2, h3, h4, h5, h6{
   font-family: 'Noto Serif', serif;

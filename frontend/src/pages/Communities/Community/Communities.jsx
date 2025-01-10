@@ -38,14 +38,15 @@ export default function Communities() {
   }, []);
 
   return (
-    <Container className="mt-5">
+    <Container className="rounded" style={{backgroundImage:"url('https://i.pinimg.com/236x/0c/61/1a/0c611ab0e09772ae18b78f26e77a708b.jpg')"}}>
       <Row>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Conteúdo principal */}
         <Col xs={12} md={9}>
-          <h2 className="text-center mb-4">Universidades na UniverCity</h2>
+          <h2 className="text-center my-5">Universidades na UniverCity</h2>
+          <br />
           <Row>
             {loading ? (
               <div className={styles.loading_container}>
@@ -61,28 +62,47 @@ export default function Communities() {
               </div>
             ) : communities.length > 0 ? (
               communities.map((community, index) => (
+                // <Col xs={12} md={6} lg={4} key={index} className="mb-4">
+                //   <Card className="shadow-sm">
+                //     <Card.Body>
+                //       <Link
+                //         className="link-dark"
+                //         to={`/comunidades/${community.slug}`}
+                //       >
+                //         <Card.Title>{community.name}</Card.Title>
+                //       </Link>
+                //       <Card.Text className="text-muted">
+                //         {community.small_description.length > 100
+                //           ? community.small_description.substring(0, 100) + "..."
+                //           : community.small_description}
+                //       </Card.Text>
+                //       <Card.Footer className="bg-white text-center">
+                //         <small className="text-dark">
+                //           {community.members || 0} membros
+                //         </small>
+                //       </Card.Footer>
+                //     </Card.Body>
+                //   </Card>
+                // </Col>
+
                 <Col xs={12} md={6} lg={4} key={index} className="mb-4">
-                  <Card className="shadow-sm">
-                    <Card.Body>
-                      <Link
-                        className="link-dark"
-                        to={`/comunidades/${community.slug}`}
-                      >
-                        <Card.Title>{community.name}</Card.Title>
-                      </Link>
-                      <Card.Text className="text-muted">
-                        {community.small_description.length > 100
-                          ? community.small_description.substring(0, 100) + "..."
-                          : community.small_description}
-                      </Card.Text>
-                      <Card.Footer className="bg-white text-center">
-                        <small className="text-dark">
-                          {community.members || 0} membros
-                        </small>
-                      </Card.Footer>
-                    </Card.Body>
-                  </Card>
+                <Card className="card-community shadow-sm ">
+                  <Card.Body>
+                    <Link className="link-dark" to={`/comunidades/${community.slug}`}>
+                      <Card.Title>{community.name}</Card.Title>
+                    </Link>
+                    <Card.Text className="text-dark">
+                      {community.small_description.length > 100
+                        ? community.small_description.substring(0, 100) + "..."
+                        : community.small_description}
+                    </Card.Text>
+                  </Card.Body>
+                  <Card.Footer className="text-center">
+                    <small>{community.members || 0} membros</small>
+                  </Card.Footer>
+                </Card>
                 </Col>
+
               ))
             ) : (
               <Col>
