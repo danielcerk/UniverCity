@@ -38,14 +38,14 @@ export default function Communities() {
   }, []);
 
   return (
-    <Container className="rounded card">
+    <Container className="rounded card" style={{minHeight:'500px'}}>
       <Row>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Conteúdo principal */}
         <Col xs={12} md={9}>
-          <h2 className="my-5 text-danger">Universidades na UniverCity</h2>
+          <h2 className="my-5 text-danger fw-bold text-center text-md-start">Universidades na UniverCity</h2>
           <br />
           <Row>
             {loading ? (
@@ -89,7 +89,10 @@ export default function Communities() {
               ))
             ) : (
               <Col>
-                <p className="text-center">Nenhuma universidade encontrada.</p>
+                <div className="text-center">
+                  <p className="py-0 p-3">Nenhuma universidade encontrada.</p>
+                  <img src="https://i.pinimg.com/236x/6e/dc/35/6edc3539d017611c9d24cd28e47420c4.jpg" alt="" />
+                </div>
               </Col>
             )}
           </Row>

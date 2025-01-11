@@ -98,14 +98,15 @@ export default function CreateQuestion() {
   }, [slug, navigate]);
 
   return (
-    <Container className="mt-5">
+    <Container className="">
       <Row>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Conteúdo Principal */}
-        <Col xs={12} md={9} className="p-5">
-          <h3>Criar Nova Pergunta</h3>
+        <Col xs={12} md={9} className="p-2 py-5 p-md-5 card">
+          <h3 className='text-center text-md-start'>Criar Nova Pergunta</h3>
+          <br />
 
           {/* Formulário para criar uma pergunta */}
           <Form onSubmit={handleQuestionSubmit}>
@@ -131,7 +132,7 @@ export default function CreateQuestion() {
             </Form.Group>
 
             <div className="text-center">
-              <Button variant="dark" type="submit" disabled={title.trim() === "" || question.trim() === ""}>
+              <Button variant="success" className='btn-hover fw-bold p-3' type="submit" disabled={title.trim() === "" || question.trim() === ""}>
                 Enviar Pergunta
               </Button>
             </div>

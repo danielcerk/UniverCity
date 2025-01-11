@@ -3,6 +3,11 @@
   max-height: 200px;
 }
 
+.card-community .card-footer a button:hover{
+ color: #d32f2f!important;
+ transition: all 0.3s ease; 
+}
+
 @media (max-width:767px){
   .card-img-community{
     max-width: 100%;

@@ -97,14 +97,15 @@ export default function CreateReclamation() {
   }, [slug, navigate]);
 
   return (
-    <Container className="mt-5">
+    <Container className="">
       <Row>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Conteúdo Principal */}
-        <Col xs={12} md={9} className="p-5">
-          <h3>Criar Nova Reclamação</h3>
+        <Col xs={12} md={9} className="p-2 py-5 p-md-5 card">
+          <h3 className='text-center text-md-start'>Criar Nova Reclamação</h3>
+          <br />
 
           {/* Formulário para criar uma reclamação */}
           <Form onSubmit={handleReclamationSubmit}>
@@ -130,7 +131,7 @@ export default function CreateReclamation() {
             </Form.Group>
 
             <div className="text-center">
-              <Button variant="danger" type="submit" disabled={title.trim() === "" || reclamation.trim() === ""}>
+              <Button variant="danger" className='btn-hover fw-bold p-3' type="submit" disabled={title.trim() === "" || reclamation.trim() === ""}>
                 Enviar Reclamação
               </Button>
             </div>

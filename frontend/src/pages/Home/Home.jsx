@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <div>
       {/* Main content layout */}
-      <Container className="mt-5" style={{minHeight:"400px"}}>
+      <Container className="" style={{minHeight:"400px"}}>
         <Row>
           {/* Sidebar */}
           <Sidebar />
