@@ -56,7 +56,7 @@ export default function Community() {
   }, [university.name]);
 
   return (
-    <Container className="mt-5">
+    <Container className="card py-5">
       <Row>
         <Sidebar />
         <Col xs={12} md={9}>
@@ -68,42 +68,53 @@ export default function Community() {
             </div>
           ) : (
             <>
-              <div className="text-center mb-4">
-                <h2>{university.name}</h2>
-                <p className="text-muted">Universidade</p>
-                <p>
-                  <strong>Site:</strong>{' '}
-                  <a href={university.site} className="link-dark" target="_blank" rel="noopener noreferrer">
-                    {university.site}
-                  </a>
-                </p>
-                <p><strong>Localização:</strong> {university.located_in}</p>
-                <p><strong>Fundada em:</strong> {new Date(university.founded_at).toLocaleDateString()}</p>
-                <p><strong>Status:</strong> {university.is_verified ? "Verificada" : "Não Verificada"}</p>
+              <div className="mb-4">
+                <div className='d-flex gap-3 flex-md-row flex-column'>
+                  <img className="card-img-community mb-3 rounded" src="https://i.pinimg.com/736x/53/5d/71/535d71f8060cdcf672173cc4944345b2.jpg" alt="" />
+                  <div>
+                    <h2>{university.name}</h2>
+                    <p className="text-muted mt-2 mb-4">Universidade</p>
+                    <div>
+                      <p className='d-flex align-items-baseline gap-2 m-0 p-0'>
+                        <p className='fw-semibold'>Site:</p>{' '}
+                        <a href={university.site} className="link-dark" target="_blank" rel="noopener noreferrer">
+                          {university.site}
+                        </a>
+                      </p>
+                      <p className='d-flex align-items-baseline gap-2 m-0 p-0'><p className='fw-semibold'>Localização:</p> {university.located_in}</p>
+                      <p className='d-flex align-items-baseline gap-2 m-0 p-0'><p className='fw-semibold'>Status:</p>
+                        <span className={`badge ${university.is_verified ? 'bg-success' : 'bg-danger'}`}>
+                            {university.is_verified ? 'Verificada' : 'Não Verificada'}
+                        </span></p>
+                    </div>
+                  </div>
+                </div>
+                <p className='d-flex align-items-baseline gap-2 m-0'><p className='fw-semibold'>Fundada em:</p> {new Date(university.founded_at).toLocaleDateString()}</p>
+              
                 <div className="mb-4">
-                  <strong>Sobre:</strong>
+                  <p className='fw-semibold'>Sobre:</p>
                   <p>{university.small_description}</p>
                 </div>
               </div>
 
-              <div className="text-center mb-4">
-                <Link to={`/comunidades/${university.slug}/reclamacao/criar`}>
-                  <Button variant="outline-danger" className="me-2">Criar Reclamação</Button>
-                </Link>
+              <div className="mb-4 d-flex gap-3">
                 <Link to={`/comunidades/${university.slug}/pergunta/criar`}>
-                  <Button variant="outline-dark">Criar Pergunta</Button>
+                  <Button className="bg-primary text-white fw-semibold p-3 btn-hover">Perguntar <i className="fa-regular fa-message"></i></Button>
+                </Link>
+                <Link to={`/comunidades/${university.slug}/reclamacao/criar`}>
+                  <Button variant="outline-danger" className="me-2 bg-danger text-white fw-semibold p-3 btn-hover">Reclamar <i className="fa-solid fa-bullhorn"></i></Button>
                 </Link>
               </div>
 
               <Row>
                 <Col xs={12} md={6} className="mb-4">
                   <Card>
-                    <Card.Header>Perguntas</Card.Header>
+                    <Card.Header className='border-0'>Perguntas</Card.Header>
                     <Card.Body>
                       {questions.length > 0 ? (
                         questions.map((question, index) => (
                           <Link to={`/comunidades/${university.slug}/pergunta/${question.slug}`} key={index}>
-                            <div className="post">
+                            <div className="post text-dark">
                               <div className="post-header">
                                 <h5 className="post-title">{question.title}</h5>
                                 <p className="post-meta">Postado por <strong>{question.author}</strong> - {question.created_at}</p>
@@ -119,14 +130,14 @@ export default function Community() {
                   </Card>
                 </Col>
 
-                <Col xs={12} md={6} className="mb-4">
+                <Col xs={12} md={6} className="mb-4 ">
                   <Card>
-                    <Card.Header>Reclamações</Card.Header>
+                    <Card.Header className='border-0'>Reclamações</Card.Header>
                     <Card.Body>
                       {complaints.length > 0 ? (
                         complaints.map((complaint, index) => (
                           <Link to={`/comunidades/${university.slug}/reclamacao/${complaint.slug}`} key={index}>
-                            <div className="post">
+                            <div className="post text-dark">
                               <div className="post-header">
                                 <h5 className="post-title">{complaint.title}</h5>
                                 <p className="post-meta">Postado por <strong>{complaint.author}</strong> - {complaint.created_at}</p>
@@ -147,5 +158,7 @@ export default function Community() {
         </Col>
       </Row>
     </Container>
+
+  
   );
 }

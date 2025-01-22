@@ -1,0 +1,93 @@
+/* button conferir */
+
+.animated-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 10px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: #fff;
+  background-color: #d32f2f;
+  border-radius: 50px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.animated-link i {
+  margin-right: 8px;
+  transition: transform 0.3s ease;
+}
+
+.animated-link:hover {
+  transform: scale(1.1);
+  background-color: #d32f2f;
+  box-shadow: 0 4px 10px rgba(227, 57, 70, 0.4);
+}
+
+.animated-link:hover i {
+  transform: translateX(5px);
+}
+
+.container-explore {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 40px;
+  background-color: #f1f1f1;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.container-explore h2 {
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.container-explore p {
+  font-size: 1.2rem;
+  color: #555;
+  line-height: 1.5;
+}
+
+.container-explore img {
+  width: 100%;
+  border-radius: 10px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  margin-top: 20px;
+}
+
+.container-explore .btn-container {
+  margin-top: 20px;
+}
+
+
+/* card novidades */
+
+.card-novidades {
+  border: none !important;
+  border-radius: 10px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-novidades:hover {
+  transform: translateY(-5px);
+}
+
+.card-novidades .card-header {
+  color: #fff;
+  font-size: 1.25rem;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: none;
+  border-radius: 25px 25px 0 0;
+}
+
+.card-novidades .card-body {
+  background-color: #f8f9fa;
+  color: #333;
+  font-size: 1rem;
+  line-height: 1.6;
+  border-radius: 0 0 10px 10px;
+}
+

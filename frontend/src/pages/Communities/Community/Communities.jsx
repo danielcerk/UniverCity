@@ -38,14 +38,15 @@ export default function Communities() {
   }, []);
 
   return (
-    <Container className="mt-5">
+    <Container className="rounded card" style={{minHeight:'500px'}}>
       <Row>
         {/* Sidebar */}
         <Sidebar />
 
         {/* Conteúdo principal */}
         <Col xs={12} md={9}>
-          <h2 className="text-center mb-4">Universidades na UniverCity</h2>
+          <h2 className="my-5 text-danger fw-bold text-center text-md-start">Universidades na UniverCity</h2>
+          <br />
           <Row>
             {loading ? (
               <div className={styles.loading_container}>
@@ -61,32 +62,37 @@ export default function Communities() {
               </div>
             ) : communities.length > 0 ? (
               communities.map((community, index) => (
+              
+
                 <Col xs={12} md={6} lg={4} key={index} className="mb-4">
-                  <Card className="shadow-sm">
-                    <Card.Body>
-                      <Link
-                        className="link-dark"
-                        to={`/comunidades/${community.slug}`}
-                      >
-                        <Card.Title>{community.name}</Card.Title>
-                      </Link>
-                      <Card.Text className="text-muted">
-                        {community.small_description.length > 100
-                          ? community.small_description.substring(0, 100) + "..."
-                          : community.small_description}
-                      </Card.Text>
-                      <Card.Footer className="bg-white text-center">
-                        <small className="text-dark">
-                          {community.members || 0} membros
-                        </small>
-                      </Card.Footer>
-                    </Card.Body>
-                  </Card>
+                <Card className="card-community shadow-sm ">
+              
+                  <Card.Body>
+                      <img className="card-img mb-3 rounded" src="https://i.pinimg.com/736x/53/5d/71/535d71f8060cdcf672173cc4944345b2.jpg" alt="" />
+                      <Card.Title>{community.name}</Card.Title>
+              
+                    <Card.Text className="text-dark">
+                      {community.small_description.length > 100
+                        ? community.small_description.substring(0, 100) + "..."
+                        : community.small_description}
+                    </Card.Text>
+                    <small className="text-danger fw-bold">{community.members || 0} membros</small>
+                  </Card.Body>
+                  <Card.Footer className="text-center">
+                    <Link className="link-dark" to={`/comunidades/${community.slug}`}>
+                      <button className="w-100 border-0 bg-dark btn-hover p-2 rounded text-white fw-bold">Ver mais detalhes</button>
+                    </Link>
+                  </Card.Footer>
+                </Card>
                 </Col>
+
               ))
             ) : (
               <Col>
-                <p className="text-center">Nenhuma universidade encontrada.</p>
+                <div className="text-center">
+                  <p className="py-0 p-3">Nenhuma universidade encontrada.</p>
+                  <img src="https://i.pinimg.com/236x/6e/dc/35/6edc3539d017611c9d24cd28e47420c4.jpg" alt="" />
+                </div>
               </Col>
             )}
           </Row>

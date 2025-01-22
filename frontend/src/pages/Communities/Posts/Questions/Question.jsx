@@ -126,10 +126,10 @@ export default function Question() {
   };
 
   return (
-    <Container className="mt-5">
+    <Container className="">
       <Row>
         <Sidebar />
-        <Col xs={12} md={9} className="p-5">
+        <Col xs={12} md={9} className="p-2 py-5 p-md-5 card">
           <Card className="mb-4">
             {question ? (
               <>
@@ -180,7 +180,7 @@ export default function Question() {
               <MDEditor value={newResponse} onChange={setNewResponse} preview="edit" />
             </Form.Group>
             <div className="text-center">
-              <Button variant="dark" type="submit" disabled={newResponse.trim() === ""}>
+              <Button variant="success" className='btn-hover fw-bold p-3' type="submit" disabled={newResponse.trim() === ""}>
                 Enviar Resposta
               </Button>
             </div>

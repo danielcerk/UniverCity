@@ -1,6 +1,7 @@
+import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import './App.css'
+import './App.css';
 
 import Navbar from './layout/Navbar/Navbar'
 import Footer from './layout/Footer/Footer'
@@ -27,15 +28,30 @@ import LandingPage from './pages/LandingPage/LandingPage'
 import Error404 from './pages/Errors/Error404'
 import Error500 from './pages/Errors/Error500';
 
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom'
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+
+  // Verifica se a rota atual é a LandingPage
+  const isLandingPage = location.pathname === '/';
 
   return (
-    <Router>
-
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh', // Faz a página ocupar toda a altura da viewport
+      }}
+    >
       <Navbar />
 
+      {/* Aplica a margem superior condicionalmente */}
+      <div
+        style={{
+          flex: 1, // Garante que o conteúdo expanda para empurrar o rodapé para o final
+          marginTop: isLandingPage ? '0' : '100px',
+        }}
+      >
         <Routes>
           <Route path='/404' element={<Error404 />} />
           <Route path='/500' element={<Error500 />} />
@@ -50,9 +66,9 @@ function App() {
           <Route path='/conta' element={<Account />} />
           <Route path='/resultados' element={<Search />} />
           <Route path='/comunidades' element={<Communities />} />
-          <Route path='/comunidades/criar' element={<CreateCommunity />} /> {/* LOGIN | ADMIN */}
+          <Route path='/comunidades/criar' element={<CreateCommunity />} />
           <Route path='/comunidades/:slug' element={<Community />} />
-          <Route path='/comunidades/:slug/editar/' element={<EditDeleteCommunity />} /> {/* LOGIN | ADMIN */}
+          <Route path='/comunidades/:slug/editar/' element={<EditDeleteCommunity />} />
           <Route path='/comunidades/:slug/pergunta/:question_slug' element={<Question />} />
           <Route path='/comunidades/:slug/pergunta/criar' element={<CreateQuestion />} />
           <Route path='/comunidades/:slug/:profile_slug/pergunta/:question_slug/editar' element={<EditDeleteQuestion />} />
@@ -61,11 +77,19 @@ function App() {
           <Route path='/comunidades/:slug/:profile_slug/reclamacao/:reclamation_slug/editar' element={<EditDeleteReclamation />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
+      </div>
 
       <Footer />
-
-    </Router>
-  )
+    </div>
+  );
 }
 
-export default App
+function App() {
+  return (
+    <Router>
+      <AppContent />
+    </Router>
+  );
+}
+
+export default App;

@@ -1,0 +1,51 @@
+
+
+
+/* banner landingpage */
+.header-langing-page{
+  min-height: 550px;
+}
+
+
+#custom-btn-about {
+  border: 2px solid white; 
+  background-color: transparent;
+  color: white; 
+  transition: all 0.3s ease; 
+}
+
+#custom-btn-about:hover {
+  background-color: white; 
+  color: #333;
+  transform: translateY(-5px); 
+}
+
+#custom-btn-student {
+  color: #fff; 
+  border: 2px solid white; 
+  transition: background-color 0.3s ease, transform 0.2s ease; 
+}
+
+#custom-btn-student:hover {
+  background-color: white; 
+  color: #333;
+  transform: scale(1.05); 
+}
+
+#custom-btn-student:active {
+  transform: scale(0.95); 
+}
+
+#custom-btn-init{
+  transition: all 0.3s ease; 
+  border: 1px solid gray;
+}
+
+#custom-btn-init:hover {
+  transform: translateY(-5px); 
+  color: #d9534f !important;
+  background-color: black;
+}
+
+
+

@@ -1,0 +1,67 @@
+/* Navbar */
+#navbar-main {
+  transition: all 0.3s ease-in-out;
+}
+#navbar-main > .container > #navbarContent > ul > .nav-item > .nav-link, #navbar-main > .container > #navbarContent > form > input::placeholder, #navbar-main > .container > .navbar-brand, #navbar-main > .container > .navbar-btn-mobile {
+  transition: all 0.3s ease-in-out;
+  color: white !important;
+}
+
+#navbar-main > .container > .navbar-btn-mobile {
+  background-color: rgb(255, 255, 255);
+}
+
+
+#navbar-main.navbar-scrolled {
+  background-color: rgb(255, 255, 255);
+
+}
+
+#navbar-main.navbar-scrolled > .container > #navbarContent > ul > .nav-item > .nav-link, 
+#navbar-main.navbar-scrolled > .container > #navbarContent > form > input::placeholder, #navbar-main.navbar-scrolled > .container > .navbar-brand{
+  color: rgb(0, 0, 0) !important;
+}
+
+.navbar-form-search{
+  max-width: 40%;
+  min-width: 400px;
+}
+
+#navbarContent > form > button{
+  transition: all 0.3s ease; 
+}
+#navbarContent > form > button:hover{
+  background-color: black !important;
+  color: #c0392b !important;
+  transform: translateY(-5px); 
+}
+
+@media (max-width:991px){
+  .navbar-form-search{
+    max-width: 100%;
+    min-width: 0px;
+  }
+}
+
+/* Efeito de linha abaixo do texto com hover */
+.texto-com-hover {
+  position: relative;
+  display: inline-block;
+
+}
+
+.texto-com-hover::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  width: 0;
+  height: 2px; /* Espessura da linha */
+  background-color: #d9534f;
+  transition: width 0.3s ease, left 0.3s ease;
+}
+
+.texto-com-hover:hover::after {
+  width: 100%;
+  left: 0;
+}
