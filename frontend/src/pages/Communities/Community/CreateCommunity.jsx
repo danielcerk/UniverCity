@@ -42,7 +42,7 @@ export default function CreateCommunity() {
 
   const fetchEstados = async () => {
     try {
-      const response = await axios.get('http://servicodados.ibge.gov.br/api/v1/localidades/estados');
+      const response = await axios.get('https://servicodados.ibge.gov.br/api/v1/localidades/estados');
       setEstados(response.data.map(item => ({ id: item.id, nome: item.nome })));
     } catch (error) {
       console.error('Erro ao buscar estados:', error);
@@ -57,7 +57,7 @@ export default function CreateCommunity() {
         return;
       }
       const response = await axios.get(
-        `http://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado.id}/municipios`
+        `https://servicodados.ibge.gov.br/api/v1/localidades/estados/${estado.id}/municipios`
       );
       setCidades(response.data.map((item) => ({ id: item.id, nome: item.nome })));
     } catch (error) {
