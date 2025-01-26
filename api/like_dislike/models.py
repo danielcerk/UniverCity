@@ -49,12 +49,13 @@ class LikeDislike(GenericContent):
 
             if existing_interaction.is_like == self.is_like:
                 
-                return
+                existing_interaction.is_like = False
+            
             else:
- 
-                existing_interaction.delete()
+                
+                existing_interaction.is_like = True
 
-        super().save(*args, **kwargs)
+            existing_interaction.save()
 
         like_dislike_object = self.like_dislike_object
 
