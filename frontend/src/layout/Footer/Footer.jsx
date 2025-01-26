@@ -19,13 +19,13 @@ export default function Footer() {
         <li className="nav-item">
           <Link to="/faq" className="nav-link px-2 text-muted">FAQ</Link>
         </li>
+        <li className="nav-item">
+          <Link to="/status" className="nav-link px-2 text-muted">Status</Link>
+        </li>
       </ul>
       <div className='bg-dark'>
         <p className="text-center text-white py-2 bg-dark ">
-          © {year}{' '}
-          <Link to="/" className={styles.Logo}>
-            <strong>UniverCity</strong>
-          </Link>
+          Made in Bahia © {year}
         </p>
       </div>
     </footer>

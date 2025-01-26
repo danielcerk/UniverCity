@@ -27,6 +27,8 @@ import EditDeleteReclamation from './pages/Communities/Posts/Reclamations/EditDe
 import LandingPage from './pages/LandingPage/LandingPage'
 import Error404 from './pages/Errors/Error404'
 import Error500 from './pages/Errors/Error500';
+import Status from './pages/Status/Status';
+import DashboardModerator from './pages/Moderator/DashboardModerator';
 
 
 function AppContent() {
@@ -58,6 +60,7 @@ function AppContent() {
           <Route path='/' element={<LandingPage />} />
           <Route path='/feed' element={<Home />} />
           <Route path='/faq' element={<FAQ />} />
+          <Route path='/status' element={<Status />} />
           <Route path='/termos-de-uso' element={<TermsOfUse />} />
           <Route path='/politica-de-privacidade' element={<PrivacyPolicy />} />
           <Route path='/login' element={<Login />} />
@@ -75,6 +78,7 @@ function AppContent() {
           <Route path='/comunidades/:slug/reclamacao/:reclamation_slug' element={<Reclamation />} />
           <Route path='/comunidades/:slug/reclamacao/criar' element={<CreateReclamation />} />
           <Route path='/comunidades/:slug/:profile_slug/reclamacao/:reclamation_slug/editar' element={<EditDeleteReclamation />} />
+          <Route path='/moderacao/dashboard/' element={<DashboardModerator />} />
           <Route path="*" element={<Navigate to="/404" replace />} />
         </Routes>
       </div>

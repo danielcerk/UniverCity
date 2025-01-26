@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import MDEditor from '@uiw/react-md-editor';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
-import axiosInstance from '../../../../interceptors/axios'; // Importe a instância personalizada
+import axiosInstance from '../../../../interceptors/axios';
+
+import ReactMarkdown from 'react-markdown'
+
+// reclamation 10
 
 export default function Reclamation() {
   const { slug, reclamation_slug } = useParams();
@@ -18,6 +22,9 @@ export default function Reclamation() {
   const [responses, setResponses] = useState([]); // Para armazenar as respostas
   const [newReclamation, setNewReclamation] = useState("");
   const [user, setUser] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportTarget, setReportTarget] = useState(null);
   const navigate = useNavigate();
 
   // Função para buscar os dados do usuário
@@ -73,6 +80,12 @@ export default function Reclamation() {
 
   const handleReclamationSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user || !user.id) {
+      navigate('/login'); 
+      return;
+    }
+
     if (newReclamation.trim() !== "") {
       try {
         const response = await axiosInstance.post(`/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/`, {
@@ -96,6 +109,7 @@ export default function Reclamation() {
   };
   
   const handleDeleteResponse = async (responseId) => {
+
     try {
       const response = await axiosInstance.delete(
         `/api/v1/communities/${slug}/reclamations/${reclamation_slug}/responses/${responseId}/`,
@@ -116,6 +130,46 @@ export default function Reclamation() {
     }
   };
 
+  const handleReportSubmit = async (e, type, objectId) => {
+
+    e.preventDefault();
+  
+    if (!reportDescription.trim()) {
+      return; // Não faz nada se a descrição estiver vazia
+    }
+    
+
+    if (!objectId) {
+      console.error("Erro: objectId está indefinido ou nulo.");
+      return;
+    }
+  
+    try {
+      
+      const res = await axiosInstance.post(`/api/v1/reports/`, {
+        user: user.id,
+        content_type: parseInt(type),
+        object_id: parseInt(objectId),
+        description: reportDescription,
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      setShowReportModal(false); // Fecha o modal
+      setReportDescription(""); // Limpa o campo
+    } catch (error) {
+      console.log(error.response.data)
+      console.error("Erro ao enviar a denúncia:", error);
+    }
+  };
+
+  const openReportModal = (target) => {
+    setReportTarget(target);
+    setShowReportModal(true);
+  };
+
   return (
     <Container className="mt-5">
       <Row>
@@ -126,12 +180,32 @@ export default function Reclamation() {
               <>
                 <Card.Header>{`Reclamação: ${reclamation.title}`}</Card.Header>
                 <Card.Body>
-                  <p>{reclamation.content}</p>
+                  <p><ReactMarkdown>{reclamation.content}</ReactMarkdown></p>
                   <p>
                     <strong>Postado por:</strong>{' '}
                     <Link to={`/perfil/${reclamation.author_slug}`}>@{reclamation.author}</Link>{' '}
                     em {reclamation.created_at}
                   </p>
+                  {user && user.id && user.name === reclamation.author && (
+                    <Button
+                      variant="primary"
+                      className="mt-3"
+                      onClick={() => navigate(`/comunidades/${slug}/${user.slug}/reclamacao/${reclamation.slug}/editar`)}
+                    >
+                      Editar Reclamação
+                    </Button>
+                  )}
+                  {user && (
+                      <Button
+                        variant="warning"
+                        className="mt-3"
+                        onClick={() =>
+                          openReportModal({ content_type: 10, object_id: reclamation.id })
+                        }
+                      >
+                      Denunciar pergunta
+                    </Button>
+                  )}
                 </Card.Body>
               </>
             ) : (
@@ -156,14 +230,25 @@ export default function Reclamation() {
                       </div>
                       <small>{response.created_at}</small>
                     </div>
-                    <p>{response.text}</p>
-                    {user.name === response.author && ( // Verifica se o usuário logado é o autor
+                    <p><ReactMarkdown>{response.text}</ReactMarkdown></p>
+                    {user && user.id && user.name === response.author && (
                       <Button
                         variant="danger"
                         size="sm"
                         onClick={() => handleDeleteResponse(response.id)}
                       >
                         Deletar
+                      </Button>
+                    )}
+                    {user && (
+                        <Button
+                          variant="warning"
+                          className="mt-3"
+                          onClick={() =>
+                            openReportModal({ content_type: 14, object_id: response.id })
+                          }
+                        >
+                        Denunciar resposta
                       </Button>
                     )}
                   </Card.Body>
@@ -187,6 +272,27 @@ export default function Reclamation() {
           </Form>
         </Col>
       </Row>
+      <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Denunciar Conteúdo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={(e) => handleReportSubmit(e, reportTarget.content_type, reportTarget.object_id)}>
+            <Form.Group>
+              <Form.Label>Descrição da denúncia:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={reportDescription}
+                onChange={(e) => setReportDescription(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="mt-3">
+              Enviar Denúncia
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
     </Container>
   );
 }
