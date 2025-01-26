@@ -1,9 +1,11 @@
 from django.db import models
 from cities_light.models import Region, SubRegion
-
+from django.contrib.auth import get_user_model
 from django.utils.text import slugify
 
 import itertools
+
+User = get_user_model()
 
 class Community(models.Model):
 
@@ -17,21 +19,6 @@ class Community(models.Model):
     site = models.URLField(null=True, blank=True,
         verbose_name='Site')
 
-    '''city = models.ForeignKey(
-        SubRegion, 
-        on_delete=models.CASCADE, 
-        related_name="localizacoes",
-        verbose_name="Cidade",
-        null=True,
-    )
-    state = models.ForeignKey(
-        Region, 
-        on_delete=models.CASCADE, 
-        related_name="localizacoes",
-        verbose_name="Estado",
-        null=True
-    )'''
-
     city = models.CharField(max_length=255, null=True, blank=True)
     state = models.CharField(max_length=255, null=True, blank=True)
 
@@ -44,6 +31,8 @@ class Community(models.Model):
         verbose_name='Número de participantes')
 
     is_verified = models.BooleanField(default=False)
+
+    active = models.BooleanField(default=True, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -79,3 +68,39 @@ class Community(models.Model):
     def __str__(self):
 
         return self.name
+    
+class MemberCommunity(models.Model):
+
+    community = models.ForeignKey(Community, 
+        on_delete=models.CASCADE, verbose_name='Comunidade')
+    
+    user = models.ForeignKey(
+        User, on_delete=models.CASCADE, verbose_name='Membro'
+    )
+
+    active = models.BooleanField(default=True, verbose_name='Ativo')
+
+    created_at = models.DateTimeField(
+        auto_now_add=True, verbose_name='Criado em'
+    )
+    updated_at = models.DateTimeField(
+        auto_now=True, verbose_name='Atualizado em'
+    )
+
+    class Meta:
+
+        verbose_name = 'Membro'
+        verbose_name_plural = 'Membros'
+
+    def save(self, *args, **kwargs):
+
+        community = Community.objects.get(pk=self.community.pk)
+
+        community.members += 1
+        community.save()
+
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+
+        return f'{self.user.name} - {self.community.name}'
