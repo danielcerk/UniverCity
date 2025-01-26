@@ -42,8 +42,6 @@ class Profile(models.Model):
 
     def save(self, *args, **kwargs):
 
-        self.is_moderator = True if self.user.is_superuser or self.user.is_staff else False
-
         if not self.slug or (self.pk and Profile.objects.filter(pk=self.pk).exists() and 
                              Profile.objects.get(pk=self.pk).user.name != self.user.name):
                 
