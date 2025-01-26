@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Form, Button } from 'react-bootstrap';
+import { Container, Row, Col, Card, Form, Button, Badge } from 'react-bootstrap';
 import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../../../interceptors/axios';
 
@@ -7,10 +7,13 @@ export default function Account() {
   const [isEditing, setIsEditing] = useState(false);
   const [user, setUser] = useState({
     name: '',
+    first_name: '',
+    last_name: '',
     slug: '',
     email: '',
     phone: '',
     biografy: '',
+    is_moderator: ''
   });
   const [isAuth, setIsAuth] = useState(false);
 
@@ -20,6 +23,7 @@ export default function Account() {
     try {
       const response = await axiosInstance.get('/api/v1/account');
       setUser(response.data);
+
     } catch (error) {
       console.error('Erro ao buscar dados do usuário:', error);
 
@@ -47,6 +51,8 @@ export default function Account() {
     try {
       const response = await axiosInstance.put(`/api/v1/profiles/${user.slug}/`, {
         name: user.name,
+        first_name: user.first_name,
+        last_name: user.last_name,
         email: user.email,
         phone: user.phone ? user.phone.toString() : '',
         biografy: user.biografy,
@@ -89,7 +95,16 @@ export default function Account() {
             <h2 className="text-center mb-4">Minha Conta</h2>
 
             <div className="mb-4">
-              <h4>Informações Pessoais</h4>
+              <h4>
+                Informações Pessoais
+              </h4>
+
+              {user.is_moderator && (
+                  <Badge bg="success" className="ms-2">
+                    moderador
+                  </Badge>
+              )}
+
               {isEditing ? (
                 <Form onSubmit={handleSubmit}>
                   <Form.Group controlId="name" className="mb-3">
@@ -100,6 +115,26 @@ export default function Account() {
                       value={user.name}
                       onChange={handleChange}
                       placeholder="Digite seu nome"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="firstName" className="mb-3">
+                    <Form.Label><strong>Primeiro nome:</strong></Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="first_name"
+                      value={user.first_name}
+                      onChange={handleChange}
+                      placeholder="Digite seu Primeiro nome"
+                    />
+                  </Form.Group>
+                  <Form.Group controlId="lastName" className="mb-3">
+                    <Form.Label><strong>Sobrenome:</strong></Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="last_name"
+                      value={user.last_name}
+                      onChange={handleChange}
+                      placeholder="Digite seu Sobrenome"
                     />
                   </Form.Group>
                   <Form.Group controlId="email" className="mb-3">
@@ -142,6 +177,8 @@ export default function Account() {
               ) : (
                 <div>
                   <p><strong>Nome:</strong> {user.name}</p>
+                  <p><strong>Primeiro nome:</strong> {user.first_name}</p>
+                  <p><strong>Sobrenome:</strong> {user.last_name}</p>
                   <p><strong>E-mail:</strong> {user.email}</p>
                   <p><strong>Número de Telefone:</strong> {user.phone}</p>
                   <p><strong>Bio:</strong> {user.biografy}</p>

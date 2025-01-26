@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
-import { Container, Row, Col, Card, Button, Form } from 'react-bootstrap';
+import { Container, Row, Col, Card, Button, Form, Modal } from 'react-bootstrap';
 import Sidebar from '../../../../layout/Sidebar/Sidebar';
 import MDEditor from '@uiw/react-md-editor';
 import { useNavigate, useParams, Link } from 'react-router-dom';
-import { FaThumbsUp, FaThumbsDown } from 'react-icons/fa';
-import axiosInstance from '../../../../interceptors/axios'; // Importe a instância personalizada
+import axiosInstance from '../../../../interceptors/axios';
+
+import ReactMarkdown from 'react-markdown';
 
 export default function Question() {
   const { slug, question_slug } = useParams();
@@ -21,6 +22,9 @@ export default function Question() {
 
   const [newResponse, setNewResponse] = useState("");
   const [responses, setResponses] = useState([]);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [reportDescription, setReportDescription] = useState("");
+  const [reportTarget, setReportTarget] = useState(null); // Para definir se a denúncia é para resposta ou pergunta
   const navigate = useNavigate();
 
   const getUserData = async (token) => {
@@ -29,7 +33,7 @@ export default function Question() {
         headers: {
           'Authorization': `Bearer ${token}`,
         },
-      }); // Usando axiosInstance
+      });
       setUser(response.data);
     } catch (error) {
       console.error('Erro ao conseguir os dados do usuário', error);
@@ -67,38 +71,26 @@ export default function Question() {
     }
   }, [question.title]);
 
-  const toggleLikeDislike = (type) => {
-    setQuestion((prev) => ({
-      ...prev,
-      like: type === "like" ? !prev.like : false,
-      dislike: type === "dislike" ? !prev.dislike : false,
-    }));
-  };
-
-  const toggleResponseLikeDislike = (index, type) => {
-    setResponses((prev) =>
-      prev.map((response, i) =>
-        i === index
-          ? {
-              ...response,
-              like: type === "like" ? !response.like : response.like,
-              dislike: type === "dislike" ? !response.dislike : response.dislike,
-            }
-          : response
-      )
-    );
-  };
-
-  // Envia uma nova resposta para a API
   const handleResponseSubmit = async (e) => {
     e.preventDefault();
+
+    if (!user || !user.id) {
+      navigate('/login');
+      return;
+    }
+
     if (newResponse.trim() !== "") {
+
       try {
         const response = await axiosInstance.post(`/api/v1/communities/${slug}/questions/${question_slug}/responses/`, {
           user: user.id,
           text: newResponse,
-          content_type: 17,
+          content_type: 7,
           object_id: question.id,
+        }, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
         });
 
         setResponses([...responses, response.data]);
@@ -113,7 +105,11 @@ export default function Question() {
     try {
       const response = await axiosInstance.delete(
         `/api/v1/communities/${slug}/questions/${question_slug}/responses/${responseId}/`
-      );
+        , {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+          },
+        });
 
       if (response.status === 204) {
         setResponses(responses.filter((res) => res.id !== responseId));
@@ -123,6 +119,46 @@ export default function Question() {
     } catch (error) {
       console.error('Erro ao deletar a resposta:', error);
     }
+  };
+
+  const handleReportSubmit = async (e, type, objectId) => {
+    e.preventDefault();
+  
+    if (!reportDescription.trim()) {
+      return; // Não faz nada se a descrição estiver vazia
+    }
+    
+
+    if (!objectId) {
+      console.error("Erro: objectId está indefinido ou nulo.");
+      return;
+    }
+  
+    try {
+      
+      const res = await axiosInstance.post(`/api/v1/reports/`, {
+        user: user.id,
+        content_type: parseInt(type),
+        object_id: parseInt(objectId),
+        description: reportDescription,
+      },{
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('access_token')}`,
+        },
+      });
+
+      setShowReportModal(false); // Fecha o modal
+      setReportDescription(""); // Limpa o campo
+    } catch (error) {
+      console.log(error.response.data)
+      console.error("Erro ao enviar a denúncia:", error);
+    }
+  };
+
+
+  const openReportModal = (target) => {
+    setReportTarget(target);
+    setShowReportModal(true);
   };
 
   return (
@@ -135,10 +171,29 @@ export default function Question() {
               <>
                 <Card.Header>{`Pergunta: ${question.title}`}</Card.Header>
                 <Card.Body>
-                  <p>{question.content}</p>
+                  <p><ReactMarkdown>{question.content}</ReactMarkdown></p>
                   <p>
                     <strong>Postado por:</strong> <Link to={`/perfil/${question.author_slug}`}>@{question.author}</Link> em {question.created_at}
                   </p>
+                  {user && user.id && user.name === question.author && (
+                    <Button
+                      variant="primary"
+                      className="mt-3"
+                      onClick={() => navigate(`/comunidades/${slug}/${user.slug}/pergunta/${question.slug}/editar`)}>
+                      Editar Reclamação
+                    </Button>
+                  )}
+                  {user && (
+                      <Button
+                        variant="warning"
+                        className="mt-3"
+                        onClick={() =>
+                          openReportModal({ content_type: 7, object_id: question.id })
+                        }
+                      >
+                      Denunciar pergunta
+                    </Button>
+                  )}
                 </Card.Body>
               </>
             ) : (
@@ -155,16 +210,26 @@ export default function Question() {
                     <div className="d-flex justify-content-between">
                       <strong><Link to={`/perfil/${response.author_slug}`}>@{response.author}</Link> escreveu:</strong>
                       <small>{response.created_at}</small>
-                    </div>
-                    <p>{response.text}</p>
-                    {user.name === response.author && ( // Verifica se o usuário logado é o autor
+                    </div>      
+                    <p><ReactMarkdown>{response.text}</ReactMarkdown></p>
+                    {user && user.id && user.name === response.author && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleDeleteResponse(response.id)}>
+                        Deletar
+                      </Button>
+                    )}
+                    {user && (
                         <Button
-                          variant="danger"
-                          size="sm"
-                          onClick={() => handleDeleteResponse(response.id)}
+                          variant="warning"
+                          className="mt-3"
+                          onClick={() =>
+                            openReportModal({ content_type: 14, object_id: response.id })
+                          }
                         >
-                          Deletar
-                        </Button>
+                        Denunciar resposta
+                      </Button>
                     )}
                   </Card.Body>
                 </Card>
@@ -187,6 +252,29 @@ export default function Question() {
           </Form>
         </Col>
       </Row>
+
+      <Modal show={showReportModal} onHide={() => setShowReportModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Denunciar Conteúdo</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form onSubmit={(e) => handleReportSubmit(e, reportTarget.content_type, reportTarget.object_id)}>
+            <Form.Group>
+              <Form.Label>Descrição da denúncia:</Form.Label>
+              <Form.Control
+                as="textarea"
+                rows={3}
+                value={reportDescription}
+                onChange={(e) => setReportDescription(e.target.value)}
+              />
+            </Form.Group>
+            <Button variant="primary" type="submit" className="mt-3">
+              Enviar Denúncia
+            </Button>
+          </Form>
+        </Modal.Body>
+      </Modal>
+
     </Container>
   );
 }

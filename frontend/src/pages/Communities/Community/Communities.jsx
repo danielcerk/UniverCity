@@ -68,7 +68,7 @@ export default function Communities() {
                 <Card className="card-community shadow-sm ">
               
                   <Card.Body>
-                      <img className="card-img mb-3 rounded" src="https://i.pinimg.com/736x/53/5d/71/535d71f8060cdcf672173cc4944345b2.jpg" alt="" />
+                      <img className="card-img mb-3 rounded" src="https://cdn.pixabay.com/photo/2020/09/29/10/42/library-5612441_1280.jpg" alt="" />
                       <Card.Title>{community.name}</Card.Title>
               
                     <Card.Text className="text-dark">

@@ -2,9 +2,11 @@ from django.shortcuts import get_object_or_404
 from .serializers import LikeDislikeSerializer
 from .models import LikeDislike
 
+from rest_framework import status
 from rest_framework.viewsets import ModelViewSet
 
 from rest_framework.permissions import (
+    IsAuthenticated,
     BasePermission,
     SAFE_METHODS
 )
@@ -30,94 +32,89 @@ class IsAuthorOrReadOnly(BasePermission):
 
 class LikeDislikeViewSet(ModelViewSet):
 
-    permission_classes = [IsAuthorOrReadOnly]
+    permission_classes = [IsAuthorOrReadOnly, IsAuthenticated]
 
     queryset = LikeDislike.objects.all()
     serializer_class = LikeDislikeSerializer
 
     def get_queryset(self):
-        
-        community_slug = self.kwargs.get('community_slug')
-        profile_slug = self.kwargs.get('profile_slug')
 
-        question_slug = self.kwargs.get('question_slug')
-        reclamation_slug = self.kwargs.get('reclamation_slug')
+        content_type_id = self.kwargs.get('content_type_id')
+        object_id = self.kwargs.get('object_id')
 
-        response_id = self.kwargs.get('response_id')
-
-        try:
-
-            community = Community.objects.get(slug=community_slug)
-
-            if profile_slug:
-
-                profile = Profile.objects.get(slug=profile_slug)
-
-                if question_slug:
-
-                    question = get_object_or_404(Question, slug=question_slug)
-
-                    question_content_type = ContentType.objects.get_for_model(Question)
-
-                    if question:
-
-                        response = LikeDislike.objects.filter(content_type=question_content_type,
-                                 object_id=question.id)
-
-                    else:
-
-                        raise NotFound('Resposta para a questão não foi encontrada')
-
-                elif reclamation_slug:
-
-                    if reclamation_slug:
-
-                        reclamation = get_object_or_404(Reclamations, slug=reclamation_slug)
-
-                        reclamation_content_type = ContentType.objects.get_for_model(Reclamations)
-
-                        if reclamation:
-
-                            response = LikeDislike.objects.filter(content_type=reclamation_content_type, object_id=reclamation.id)
-
-                    else:
-
-                        raise NotFound('Resposta para a reclamação não foi encontrada')
-
-            else:
-
-                response = LikeDislike.objects.all()
+        if content_type_id and object_id:
             
-        except Community.DoesNotExist:
-
-            raise NotFound(detail="A comunidade não foi encontrada.")
+            content_type = ContentType.objects.get(id=content_type_id)
+            return LikeDislike.objects.filter(like_dislike_type=content_type, object_id=object_id)
         
-        return response
+        return LikeDislike.objects.all().order_by('-created_at')
 
-    def retrieve(self, request, *args, **kwargs):
-    
-        community_slug = self.kwargs.get('community_slug')
-        profile_slug = self.kwargs.get('profile_slug')
+    def list(self, request, *args, **kwargs):
 
-        question_slug = self.kwargs.get('question_slug')
-        reclamation_slug = self.kwargs.get('reclamation_slug')
+        content_type_id = self.kwargs.get('content_type_id')
+        object_id = self.kwargs.get('object_id')
 
-        response_id = self.kwargs.get('response_id')
+        like_dislike = LikeDislike.objects.all()
+        serializer = LikeDislikeSerializer(like_dislike, many=True)
 
         try:
 
-            community = Community.objects.get(slug=community_slug)
+            content_type = ContentType.objects.get(id=content_type_id)
+            like_dislikes = LikeDislike.objects.filter(like_dislike_type=content_type, object_id=object_id)
+            serializer = LikeDislikeSerializer(like_dislikes, many=True)
 
-            if profile_slug:
-
-                profile = Profile.objects.get(slug=profile_slug)
-
-        except Community.DoesNotExist:
-
-            raise NotFound(detail="A comunidade não foi encontrada.")
+            return Response(serializer.data, status=status.HTTP_200_OK)
         
-        response = self.get_object()
-        
-        serializer = self.get_serializer(response)
+        except ContentType.DoesNotExist:
 
-        return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+
+        content_type_id = self.kwargs.get('content_type_id')
+        object_id = self.kwargs.get('object_id')
+
+        data = request.data
+
+        if content_type_id and object_id:
+
+            try:
+
+                content_type = ContentType.objects.get(id=content_type_id)
+
+            except ContentType.DoesNotExist:
+
+                return Response({'error': 'Content type not found'}, status=status.HTTP_404_NOT_FOUND)
+
+            data.update({
+                'content_type': content_type.id,
+                'object_id': object_id
+            })
+
+        serializer = self.get_serializer(data=data)
+
+        if serializer.is_valid():
+
+            serializer.save()
+
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    def retrieve(self, request, *args, **kwargs):
+
+        content_type_id = self.kwargs.get('content_type_id')
+        object_id = self.kwargs.get('object_id')
+        pk = kwargs.get('pk')
+
+        try:
+
+            content_type = ContentType.objects.get(id=content_type_id)
+            like_dislike = LikeDislike.objects.get(like_dislike_type=content_type, object_id=object_id, pk=pk)
+            serializer = LikeDislikeSerializer(like_dislike)
+
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        
+        except (ContentType.DoesNotExist, LikeDislike.DoesNotExist):
+
+            return Response({'error': 'LikeDislike not found'}, status=status.HTTP_404_NOT_FOUND)

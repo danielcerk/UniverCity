@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Community
+from .models import Community, MemberCommunity
 
 @admin.register(Community)
 class CommunityModelAdmin(admin.ModelAdmin):
@@ -16,3 +16,15 @@ class CommunityModelAdmin(admin.ModelAdmin):
         return (obj.small_description[:15] + '...') if len(obj.small_description) > 15 else obj.small_description
 
     short_small_description.short_description = 'Small Description'
+
+@admin.register(MemberCommunity)
+class MemberCommunityAdmin(admin.ModelAdmin):
+
+    list_display = (
+        'community', 'user', 
+        'active', 'created_at', 'updated_at'
+    )
+
+    list_filter = (
+        'community', 'active'
+    )

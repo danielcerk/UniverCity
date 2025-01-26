@@ -2,15 +2,17 @@ from django.db import models
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.conf import settings
-
+from django.core.mail import send_mail
 from django.contrib.contenttypes.fields import GenericRelation
 from api.like_dislike.models import LikeDislike
+from api.reports.models import Report
 
 from django.db.models import F
 
 User = settings.AUTH_USER_MODEL
 
 class GenericContent(models.Model):
+
     content_type = models.ForeignKey(
         ContentType,
         on_delete=models.CASCADE,
@@ -37,6 +39,11 @@ class Response(GenericContent):
     likes_dislikes = GenericRelation(LikeDislike,
         object_id_field='object_id', content_type_field='like_dislike_type')
 
+    reports = GenericRelation(Report,
+        object_id_field='object_id', content_type_field='content_type')
+
+    active = models.BooleanField(default=True, null=False)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -55,11 +62,24 @@ class Response(GenericContent):
         super().save(*args, **kwargs)
 
         if self.content_type.model in ['reclamations', 'question']:
+
             content_object = self.content_object
+
+            message = f'@{self.user.name} respondeu seu conteúdo com "{self.text}".'
+
+            send_mail(
+                f'@{self.user.name} respondeu seu conteúdo.',
+                message,
+                'suporteconstsoft@gmail.com',
+                [content_object.user.email],
+                fail_silently=False,
+
+            )
 
             if is_new:
                 
                 content_object.responses_count = F('responses_count') + 1
+
             else:
                 
                 pass

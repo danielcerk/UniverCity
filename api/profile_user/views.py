@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
@@ -10,11 +11,17 @@ from rest_framework.permissions import (
 )
 
 from rest_framework.exceptions import NotFound, PermissionDenied
+from rest_framework import status
 
 from .models import Profile
 from .serializers import ProfileSerializer
 
+from django.contrib.auth import get_user_model
+
+User = get_user_model()
+
 class IsOwner(BasePermission):
+
     
     def has_object_permission(self, request, view, obj):
 
@@ -47,8 +54,9 @@ class ProfileViewSet(ViewSet):
 
             else:
 
-                serializer = ProfileSerializer(profile, fields=["id", 'name', 'email', 
-                    'full_name','slug', "biografy", 'phone'])
+                serializer = ProfileSerializer(profile, fields=["id", 'name',
+                    'first_name', 'last_name', 'email', 
+                    'full_name','slug', "biografy", 'phone', 'is_moderator'])
 
             return Response(serializer.data)
         
@@ -64,9 +72,10 @@ class ProfileViewSet(ViewSet):
 
             profile = Profile.objects.get(slug=slug)
 
-            if profile.user != request.user:
+            if not ( request.user.profile.is_moderator or profile.user == request.user ):
 
                 raise PermissionDenied("Você não tem permissão para editar este perfil.")
+            
             
             serializer = ProfileSerializer(profile, data=request.data, partial=True)
             serializer.is_valid(raise_exception=True)
@@ -111,6 +120,8 @@ class ProfileDetailView(APIView):
         return Response({
             "id": user.id,
             "name": user.name,
+            "first_name": user.first_name,
+            "last_name": user.last_name,
             "email": user.email,
             "phone": user.profile.phone,
             "slug": user.profile.slug,

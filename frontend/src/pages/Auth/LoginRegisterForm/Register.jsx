@@ -6,6 +6,8 @@ export default function Register() {
   const navigate = useNavigate();
 
   const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -16,6 +18,8 @@ export default function Register() {
 
     const user = {
       name: name,
+      first_name: firstName,
+      last_name: lastName,
       email: email,
       password: password,
     };
@@ -93,8 +97,33 @@ export default function Register() {
                     onChange={(e) => setName(e.target.value)}
                     required
                   />
-                </div>
+                  <label htmlFor="firstName" className="form-label">
+                    Primeiro Nome
+                  </label>
+                  <input
+                    type="text"
+                    id="firstName"
+                    className="form-control"
+                    placeholder="Digite seu primeiro nome"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    required
+                  />
 
+                  <label htmlFor="lastName" className="form-label">
+                    Sobrenome
+                  </label>
+                  <input
+                    type="text"
+                    id="lastName"
+                    className="form-control"
+                    placeholder="Digite seu sobrenome"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    required
+                  />
+                   
+                </div>
                 <div className="mb-3">
                   <label htmlFor="email" className="form-label">
                     E-mail

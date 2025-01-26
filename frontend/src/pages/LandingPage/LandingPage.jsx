@@ -20,7 +20,7 @@ export default function LandingPage() {
     <div
       className="position-absolute top-0 start-0 w-100 h-100 py-5"
       style={{
-        backgroundImage: "url('https://i.pinimg.com/736x/ad/f9/a4/adf9a4cea463355da988abc14e0b5f13.jpg')",
+        backgroundImage: "url('https://cdn.pixabay.com/photo/2020/09/29/10/42/library-5612441_1280.jpg')",
      
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed', 

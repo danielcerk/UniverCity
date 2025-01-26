@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from api.response.models import Response
 from api.like_dislike.models import LikeDislike
+from api.reports.models import Report
 
 from django.utils.text import slugify
 
@@ -29,13 +30,19 @@ class Reclamations(models.Model):
 
     likes_dislikes = GenericRelation(LikeDislike,
         object_id_field='object_id', content_type_field='like_dislike_type')
+    
     responses = GenericRelation(Response, 
+        object_id_field='object_id', content_type_field='content_type')
+
+    reports = GenericRelation(Report,
         object_id_field='object_id', content_type_field='content_type')
     
     responses_count = models.PositiveBigIntegerField(default=0)
 
     is_resolved = models.BooleanField(default=False,
         verbose_name='Resolvido')
+    
+    active = models.BooleanField(default=True, null=False)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
